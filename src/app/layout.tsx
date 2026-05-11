@@ -16,7 +16,7 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cutie de scule · Stația 3 · Usage Tracker",
+  title: "Cutie de scule · Stația 1 · Usage Tracker",
   description: "Touchscreen inventory kiosk for the workshop toolbox.",
 };
 
