@@ -1,7 +1,16 @@
 "use client";
 
-import { AlertTriangle, ArrowDownToLine, ArrowUpFromLine, Boxes, PackageMinus } from "lucide-react";
-import { type DashboardStats } from "@/app/actions";
+import { useEffect, useState, useTransition } from "react";
+import {
+  AlertTriangle,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  Boxes,
+  PackageMinus,
+  RefreshCw,
+} from "lucide-react";
+import { getDashboardStats, type DashboardStats } from "@/app/actions";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 function Kpi({
@@ -53,24 +62,69 @@ function Kpi({
 
 function Sparkline({ daily }: { daily: DashboardStats["daily"] }) {
   const max = Math.max(1, ...daily.map((d) => d.takes + d.returns));
+  const totalActivity = daily.reduce((s, d) => s + d.takes + d.returns, 0);
+
+  if (totalActivity === 0) {
+    return (
+      <div className="flex h-32 items-center justify-center rounded-[6px] border border-dashed border-[var(--kiosk-line-2)] bg-[var(--kiosk-surface-2)] text-[12px] text-[var(--kiosk-ink-soft)]">
+        Nicio activitate în ultimele 14 zile
+      </div>
+    );
+  }
+
   return (
-    <div className="flex h-32 items-end gap-1.5">
+    <div className="flex h-32 items-stretch gap-1.5 pt-1">
       {daily.map((d) => {
-        const totalH = ((d.takes + d.returns) / max) * 100;
-        const takeH = ((d.takes) / max) * 100;
+        const total = d.takes + d.returns;
+        const totalH = (total / max) * 100;
+        const takeH = (d.takes / max) * 100;
         return (
-          <div key={d.day} className="flex flex-1 flex-col items-center gap-1.5">
-            <div className="relative flex w-full flex-1 items-end">
+          <div
+            key={d.day}
+            className="group relative flex h-full flex-1 flex-col items-center gap-1.5"
+          >
+            <div className="relative flex w-full flex-1 items-end overflow-visible">
+              {/* Hover tooltip */}
               <div
-                className="w-full rounded-t-[3px] bg-[var(--kiosk-green)]/70"
+                role="tooltip"
+                className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1.5 hidden -translate-x-1/2 whitespace-nowrap rounded-[6px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] px-2.5 py-1.5 text-[11px] text-[var(--kiosk-ink)] shadow-[var(--kiosk-shadow)] group-hover:block"
+              >
+                <div className="mono mb-0.5 text-[10px] uppercase tracking-[0.1em] text-[var(--kiosk-ink-soft)]">
+                  {d.day}
+                </div>
+                <div className="mono flex items-center gap-2">
+                  <span className="flex items-center gap-1">
+                    <span className="h-2 w-2 rounded-sm bg-[var(--kiosk-red)]/85" />
+                    {d.takes}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="h-2 w-2 rounded-sm bg-[var(--kiosk-green)]/70" />
+                    {d.returns}
+                  </span>
+                  <span className="text-[var(--kiosk-ink-soft)]">·</span>
+                  <span>{total}</span>
+                </div>
+              </div>
+              {/* Bar */}
+              <div
+                className="absolute bottom-0 w-full rounded-t-[3px] bg-[var(--kiosk-green)]/70 transition group-hover:bg-[var(--kiosk-green)]"
                 style={{ height: `${totalH}%` }}
               />
               <div
-                className="absolute bottom-0 w-full rounded-t-[3px] bg-[var(--kiosk-red)]/85"
+                className="absolute bottom-0 w-full rounded-t-[3px] bg-[var(--kiosk-red)]/85 transition group-hover:bg-[var(--kiosk-red)]"
                 style={{ height: `${takeH}%` }}
               />
+              {/* Total label above bar — visible only when there's activity */}
+              {total > 0 && (
+                <div
+                  className="mono pointer-events-none absolute left-1/2 -translate-x-1/2 -translate-y-[14px] text-[9px] font-medium text-[var(--kiosk-ink-mute)] opacity-0 transition group-hover:opacity-0 sm:opacity-100"
+                  style={{ bottom: `${totalH}%` }}
+                >
+                  {total}
+                </div>
+              )}
             </div>
-            <div className="mono text-[9px] text-[var(--kiosk-ink-soft)]">
+            <div className="mono text-[9px] text-[var(--kiosk-ink-soft)] group-hover:text-[var(--kiosk-ink)]">
               {d.day.slice(-2)}
             </div>
           </div>
@@ -80,9 +134,39 @@ function Sparkline({ daily }: { daily: DashboardStats["daily"] }) {
   );
 }
 
-export function DashboardTab({ stats }: { stats: DashboardStats }) {
+export function DashboardTab({ stats: initialStats }: { stats: DashboardStats }) {
+  const [stats, setStats] = useState<DashboardStats>(initialStats);
+  const [pending, startTransition] = useTransition();
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      const data = await getDashboardStats();
+      if (!cancelled) setStats(data);
+    }
+    load();
+    const id = setInterval(load, 30_000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, []);
+
+  function refreshNow() {
+    startTransition(async () => {
+      const data = await getDashboardStats();
+      setStats(data);
+    });
+  }
+
   return (
     <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-end">
+        <Button variant="outline" size="sm" onClick={refreshNow} disabled={pending}>
+          <RefreshCw className={`mr-1.5 h-4 w-4 ${pending ? "animate-spin" : ""}`} />
+          Reîmprospătează
+        </Button>
+      </div>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <Kpi label="Stoc total" value={stats.totalStock} hint={`${stats.itemCount} articole`} Icon={Boxes} />
         <Kpi

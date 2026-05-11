@@ -1,9 +1,30 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { type DashboardStats } from "@/app/actions";
+import { getDashboardStats, type DashboardStats } from "@/app/actions";
 
-export function UsageTab({ stats }: { stats: DashboardStats }) {
+export function UsageTab({ stats: initialStats }: { stats: DashboardStats }) {
+  const [stats, setStats] = useState<DashboardStats>(initialStats);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      const data = await getDashboardStats();
+      if (!cancelled) setStats(data);
+    }
+    load();
+    const id = setInterval(load, 30_000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, []);
+
+  return inner(stats);
+}
+
+function inner(stats: DashboardStats) {
   const totalTakes = stats.daily.reduce((s, d) => s + d.takes, 0);
   const totalReturns = stats.daily.reduce((s, d) => s + d.returns, 0);
 

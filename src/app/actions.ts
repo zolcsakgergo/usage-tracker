@@ -161,18 +161,30 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   );
   const itemsById = new Map(items.map((i) => [i.id, i.name]));
 
-  // Daily buckets
+  // Bucket by Bucharest-local day so dev (local TZ) and prod (UTC) agree.
+  const TZ = "Europe/Bucharest";
+  const dayFmt = new Intl.DateTimeFormat("sv-SE", {
+    timeZone: TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const dayKey = (d: Date) => dayFmt.format(d);
+
+  const counts = new Map<string, { takes: number; returns: number }>();
+  for (const t of recent) {
+    const key = dayKey(t.ts);
+    const c = counts.get(key) ?? { takes: 0, returns: 0 };
+    if (t.type === "take") c.takes++;
+    else c.returns++;
+    counts.set(key, c);
+  }
+
   const days: { day: string; takes: number; returns: number }[] = [];
   for (let d = 13; d >= 0; d--) {
-    const dayStart = new Date(now - d * DAY);
-    dayStart.setHours(0, 0, 0, 0);
-    const dayEnd = new Date(dayStart.getTime() + DAY);
-    const slice = recent.filter((t) => t.ts >= dayStart && t.ts < dayEnd);
-    days.push({
-      day: dayStart.toISOString().slice(0, 10),
-      takes: slice.filter((t) => t.type === "take").length,
-      returns: slice.filter((t) => t.type === "return_").length,
-    });
+    const key = dayKey(new Date(now - d * DAY));
+    const c = counts.get(key) ?? { takes: 0, returns: 0 };
+    days.push({ day: key, takes: c.takes, returns: c.returns });
   }
 
   const txLast7d = recent.filter((t) => t.ts >= since7).length;
