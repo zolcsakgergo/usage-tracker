@@ -68,52 +68,60 @@ export function Keypad({ title, subtitle, item, errorTick, onSubmit, onCancel }:
         <X size={22} strokeWidth={2} />
       </button>
 
-      <div className="mx-auto grid w-full max-w-[1180px] flex-1 grid-cols-[1fr_440px] items-center gap-12 px-16 py-14">
-        <div className="flex min-w-0 flex-col gap-6">
+      <div className="mx-auto grid w-full max-w-[1100px] flex-1 grid-cols-[1fr_minmax(280px,42%)] items-center gap-[clamp(16px,3vw,48px)] px-[clamp(16px,3vw,64px)] py-[clamp(16px,3vh,56px)]">
+        <div className="flex min-w-0 flex-col gap-[clamp(12px,2vh,24px)]">
           {item ? (
-            <div className="rounded-[10px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] px-6 py-[22px] shadow-[var(--kiosk-shadow-sm)]">
-              <div className="mono text-[10.5px] uppercase tracking-[0.14em] text-[var(--kiosk-ink-soft)]">
+            <div className="rounded-[10px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] px-[clamp(14px,2vw,24px)] py-[clamp(12px,2vh,22px)] shadow-[var(--kiosk-shadow-sm)]">
+              <div className="mono text-[clamp(9px,1.2vh,10.5px)] uppercase tracking-[0.14em] text-[var(--kiosk-ink-soft)]">
                 {T.compartment} · {slotFor(item.slot)}
               </div>
-              <div className="mt-2 text-[28px] font-medium tracking-[-0.018em] text-[var(--kiosk-ink)]">
+              <div className="mt-2 text-[clamp(18px,2.8vh,28px)] font-medium tracking-[-0.018em] text-[var(--kiosk-ink)]">
                 {item.name}
               </div>
+              {item.code && (
+                <div className="mono mt-0.5 text-[clamp(10px,1.3vh,11.5px)] uppercase tracking-[0.08em] text-[var(--kiosk-ink-dim)]">
+                  {item.code}
+                </div>
+              )}
               <div className="mt-1.5 flex items-baseline gap-2">
-                <span className="mono text-[22px] tracking-[-0.02em] text-[var(--kiosk-ink)]">
+                <span className="mono text-[clamp(15px,2.2vh,22px)] tracking-[-0.02em] text-[var(--kiosk-ink)]">
                   {item.count}
                 </span>
-                <span className="text-[13px] text-[var(--kiosk-ink-soft)]">
+                <span className="text-[clamp(11px,1.4vh,13px)] text-[var(--kiosk-ink-soft)]">
                   {item.unit} {T.onHand}
                 </span>
               </div>
             </div>
           ) : (
-            <div className="rounded-[10px] border border-[var(--kiosk-ink)] bg-[var(--kiosk-surface)] px-6 py-[22px] shadow-[var(--kiosk-shadow-sm)]">
-              <div className="mono text-[10.5px] uppercase tracking-[0.14em] text-[var(--kiosk-ink-soft)]">
+            <div className="rounded-[10px] border border-[var(--kiosk-ink)] bg-[var(--kiosk-surface)] px-[clamp(14px,2vw,24px)] py-[clamp(12px,2vh,22px)] shadow-[var(--kiosk-shadow-sm)]">
+              <div className="mono text-[clamp(9px,1.2vh,10.5px)] uppercase tracking-[0.14em] text-[var(--kiosk-ink-soft)]">
                 Acces restricționat
               </div>
-              <div className="mt-2 text-[28px] font-medium tracking-[-0.018em] text-[var(--kiosk-ink)]">
+              <div className="mt-2 text-[clamp(18px,2.8vh,28px)] font-medium tracking-[-0.018em] text-[var(--kiosk-ink)]">
                 Panou Administrator
               </div>
-              <div className="mt-1.5 text-[13px] text-[var(--kiosk-ink-soft)]">
+              <div className="mt-1.5 text-[clamp(11px,1.4vh,13px)] text-[var(--kiosk-ink-soft)]">
                 Doar utilizatori autorizați
               </div>
             </div>
           )}
 
           <div>
-            <h1 className="text-[34px] font-medium tracking-[-0.02em] text-[var(--kiosk-ink)]">
+            <h1 className="text-[clamp(22px,3.4vh,34px)] font-medium tracking-[-0.02em] text-[var(--kiosk-ink)]">
               {title}
             </h1>
-            <p className="mt-1.5 text-[14.5px] text-[var(--kiosk-ink-mute)]">{subtitle}</p>
+            <p className="mt-1.5 text-[clamp(12px,1.6vh,14.5px)] text-[var(--kiosk-ink-mute)]">
+              {subtitle}
+            </p>
           </div>
 
-          <div className={`flex gap-3 ${shake ? "kiosk-shake" : ""}`}>
+          <div className={`flex gap-[clamp(6px,1vw,12px)] ${shake ? "kiosk-shake" : ""}`}>
             {cells.map((on, i) => (
               <span
                 key={i}
                 className={[
-                  "mono grid h-16 w-14 place-items-center rounded-[6px] border bg-[var(--kiosk-surface)] text-[28px] shadow-[var(--kiosk-shadow-sm)] transition",
+                  "mono grid place-items-center rounded-[6px] border bg-[var(--kiosk-surface)] shadow-[var(--kiosk-shadow-sm)] transition",
+                  "h-[clamp(42px,6.5vh,64px)] w-[clamp(36px,5vw,56px)] text-[clamp(20px,3vh,28px)]",
                   on
                     ? "border-[var(--kiosk-accent)] text-[var(--kiosk-accent)] shadow-[0_0_0_3px_var(--kiosk-accent-soft)]"
                     : "border-[var(--kiosk-line)] text-[var(--kiosk-accent)]",
@@ -125,22 +133,23 @@ export function Keypad({ title, subtitle, item, errorTick, onSubmit, onCancel }:
           </div>
 
           <div
-            className="mono text-[13.5px] text-[var(--kiosk-red)]"
+            className="mono text-[clamp(11px,1.5vh,13.5px)] text-[var(--kiosk-red)]"
             style={{ visibility: errorTick > 0 && !shake ? "hidden" : errorTick > 0 ? "visible" : "hidden" }}
           >
             {T.badCode}
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-3 gap-[clamp(6px,1vh,10px)]">
           {(["1","2","3","4","5","6","7","8","9","C","0","⌫"] as const).map((k) => (
             <button
               key={k}
               type="button"
               onClick={() => press(k)}
               className={[
-                "mono h-[88px] rounded-[10px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] text-[26px] shadow-[var(--kiosk-shadow-sm)] transition active:translate-y-px active:bg-[var(--kiosk-bg-2)] hover:border-[var(--kiosk-line-3)] hover:bg-[var(--kiosk-surface-2)]",
-                k === "C" || k === "⌫" ? "text-[20px] text-[var(--kiosk-ink-mute)]" : "text-[var(--kiosk-ink)]",
+                "mono rounded-[10px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] shadow-[var(--kiosk-shadow-sm)] transition active:translate-y-px active:bg-[var(--kiosk-bg-2)] hover:border-[var(--kiosk-line-3)] hover:bg-[var(--kiosk-surface-2)]",
+                "h-[clamp(54px,8vh,88px)] text-[clamp(18px,2.6vh,26px)]",
+                k === "C" || k === "⌫" ? "text-[clamp(14px,2vh,20px)] text-[var(--kiosk-ink-mute)]" : "text-[var(--kiosk-ink)]",
               ].join(" ")}
             >
               {k}
@@ -150,7 +159,7 @@ export function Keypad({ title, subtitle, item, errorTick, onSubmit, onCancel }:
             type="button"
             onClick={() => press("OK")}
             disabled={code.length < 2}
-            className="col-span-3 h-[76px] rounded-[10px] border border-[var(--kiosk-ink)] bg-[var(--kiosk-ink)] text-[18px] font-medium tracking-[0.005em] text-[var(--kiosk-bg)] transition hover:bg-[var(--kiosk-ink-2)] active:translate-y-px disabled:pointer-events-none disabled:opacity-35"
+            className="col-span-3 h-[clamp(48px,7vh,76px)] rounded-[10px] border border-[var(--kiosk-ink)] bg-[var(--kiosk-ink)] text-[clamp(14px,2vh,18px)] font-medium tracking-[0.005em] text-[var(--kiosk-bg)] transition hover:bg-[var(--kiosk-ink-2)] active:translate-y-px disabled:pointer-events-none disabled:opacity-35"
           >
             {T.enter}
           </button>

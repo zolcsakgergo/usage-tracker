@@ -40,59 +40,66 @@ export function TransactionScreen({ item, user, sessionTx, onPlus, onMinus, onDo
         <X size={22} strokeWidth={2} />
       </button>
 
-      <div className="mx-auto flex w-full max-w-[860px] flex-1 flex-col items-center justify-center gap-[22px] px-14 pb-9 pt-12">
+      <div className="mx-auto flex w-full max-w-[820px] flex-1 flex-col items-center justify-center gap-[clamp(12px,2.2vh,22px)] px-[clamp(16px,3vw,56px)] pb-[clamp(16px,3vh,36px)] pt-[clamp(20px,4vh,48px)]">
         <div className="text-center">
-          <div className="mono text-[11px] uppercase tracking-[0.14em] text-[var(--kiosk-ink-soft)]">
+          <div className="mono text-[clamp(9px,1.3vh,11px)] uppercase tracking-[0.14em] text-[var(--kiosk-ink-soft)]">
             {T.compartment} · {slotFor(item.slot)}
           </div>
-          <div className="mt-1 text-[34px] font-medium tracking-[-0.022em] text-[var(--kiosk-ink)]">
+          <div className="mt-1 text-[clamp(22px,3.6vh,34px)] font-medium tracking-[-0.022em] text-[var(--kiosk-ink)]">
             {T.hello}, {user.name.split(" ")[0]}
           </div>
         </div>
 
-        <div className="flex w-full flex-col gap-[26px] rounded-[10px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] px-8 pb-[26px] pt-7 shadow-[var(--kiosk-shadow)]">
-          <div className="flex items-end justify-between gap-6 border-b border-[var(--kiosk-line)] pb-5">
-            <div>
-              <div className="text-[28px] font-medium tracking-[-0.018em] text-[var(--kiosk-ink)]">
+        <div className="flex w-full flex-col gap-[clamp(14px,2.4vh,26px)] rounded-[10px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] px-[clamp(16px,2.4vw,32px)] pb-[clamp(14px,2.4vh,26px)] pt-[clamp(14px,2.4vh,28px)] shadow-[var(--kiosk-shadow)]">
+          <div className="flex items-end justify-between gap-4 border-b border-[var(--kiosk-line)] pb-[clamp(10px,1.6vh,20px)]">
+            <div className="min-w-0">
+              <div className="truncate text-[clamp(18px,2.8vh,28px)] font-medium tracking-[-0.018em] text-[var(--kiosk-ink)]">
                 {item.name}
               </div>
-              <div className="mono mt-1.5 text-[12px] uppercase tracking-[0.1em] text-[var(--kiosk-ink-soft)]">
+              {item.code && (
+                <div className="mono mt-0.5 text-[clamp(10px,1.4vh,12px)] uppercase tracking-[0.08em] text-[var(--kiosk-ink-dim)]">
+                  {item.code}
+                </div>
+              )}
+              <div className="mono mt-1.5 text-[clamp(10px,1.4vh,12px)] uppercase tracking-[0.1em] text-[var(--kiosk-ink-soft)]">
                 {user.role}
               </div>
             </div>
             <div className="text-right">
-              <div className={`mono text-[36px] leading-none tracking-[-0.028em] ${onhandColor}`}>
+              <div
+                className={`mono text-[clamp(24px,4.2vh,36px)] leading-none tracking-[-0.028em] ${onhandColor}`}
+              >
                 {item.count}
               </div>
-              <div className="mono mt-1.5 text-[11px] uppercase tracking-[0.1em] text-[var(--kiosk-ink-soft)]">
+              <div className="mono mt-1.5 text-[clamp(9px,1.3vh,11px)] uppercase tracking-[0.1em] text-[var(--kiosk-ink-soft)]">
                 {item.unit} {T.onHand}
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-2 gap-[clamp(8px,1.5vw,14px)]">
             <button
               type="button"
               onClick={() => !cannotTake && onMinus()}
               disabled={cannotTake}
-              className="flex h-[148px] flex-col items-center justify-center gap-1.5 rounded-[10px] border border-[#e0c5bc] bg-gradient-to-b from-white to-[#faece8] shadow-[var(--kiosk-shadow-sm)] transition hover:-translate-y-px hover:border-[var(--kiosk-red)] hover:shadow-[var(--kiosk-shadow)] active:translate-y-px disabled:pointer-events-none disabled:opacity-35"
+              className="flex h-[clamp(96px,15vh,148px)] flex-col items-center justify-center gap-1 rounded-[10px] border border-[#e0c5bc] bg-gradient-to-b from-white to-[#faece8] shadow-[var(--kiosk-shadow-sm)] transition hover:-translate-y-px hover:border-[var(--kiosk-red)] hover:shadow-[var(--kiosk-shadow)] active:translate-y-px disabled:pointer-events-none disabled:opacity-35"
             >
-              <div className="mono text-[56px] font-medium leading-none tracking-[-0.03em] text-[var(--kiosk-red)]">
+              <div className="mono text-[clamp(36px,6.5vh,56px)] font-medium leading-none tracking-[-0.03em] text-[var(--kiosk-red)]">
                 −1
               </div>
-              <div className="mono text-[14px] uppercase tracking-[0.12em] text-[var(--kiosk-ink-mute)]">
+              <div className="mono text-[clamp(11px,1.6vh,14px)] uppercase tracking-[0.12em] text-[var(--kiosk-ink-mute)]">
                 {T.takeOut}
               </div>
             </button>
             <button
               type="button"
               onClick={onPlus}
-              className="flex h-[148px] flex-col items-center justify-center gap-1.5 rounded-[10px] border border-[#b9d2bf] bg-gradient-to-b from-white to-[#e5eee5] shadow-[var(--kiosk-shadow-sm)] transition hover:-translate-y-px hover:border-[var(--kiosk-green)] hover:shadow-[var(--kiosk-shadow)] active:translate-y-px"
+              className="flex h-[clamp(96px,15vh,148px)] flex-col items-center justify-center gap-1 rounded-[10px] border border-[#b9d2bf] bg-gradient-to-b from-white to-[#e5eee5] shadow-[var(--kiosk-shadow-sm)] transition hover:-translate-y-px hover:border-[var(--kiosk-green)] hover:shadow-[var(--kiosk-shadow)] active:translate-y-px"
             >
-              <div className="mono text-[56px] font-medium leading-none tracking-[-0.03em] text-[var(--kiosk-green)]">
+              <div className="mono text-[clamp(36px,6.5vh,56px)] font-medium leading-none tracking-[-0.03em] text-[var(--kiosk-green)]">
                 +1
               </div>
-              <div className="mono text-[14px] uppercase tracking-[0.12em] text-[var(--kiosk-ink-mute)]">
+              <div className="mono text-[clamp(11px,1.6vh,14px)] uppercase tracking-[0.12em] text-[var(--kiosk-ink-mute)]">
                 {T.putBack}
               </div>
             </button>
@@ -133,7 +140,7 @@ export function TransactionScreen({ item, user, sessionTx, onPlus, onMinus, onDo
         <button
           type="button"
           onClick={onDone}
-          className="h-[68px] w-full rounded-[10px] bg-[var(--kiosk-ink)] text-[17px] font-medium tracking-[0.005em] text-[var(--kiosk-bg)] transition hover:bg-[var(--kiosk-ink-2)] active:translate-y-px"
+          className="h-[clamp(48px,7vh,68px)] w-full rounded-[10px] bg-[var(--kiosk-ink)] text-[clamp(13px,1.9vh,17px)] font-medium tracking-[0.005em] text-[var(--kiosk-bg)] transition hover:bg-[var(--kiosk-ink-2)] active:translate-y-px"
         >
           {T.done}
         </button>

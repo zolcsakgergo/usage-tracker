@@ -49,6 +49,7 @@ async function main() {
       where: { id: it.id },
       update: {
         name: it.name,
+        code: it.code,
         unit: it.unit,
         startCount: it.start,
         lowThreshold: it.low,
@@ -57,6 +58,7 @@ async function main() {
       create: {
         id: it.id,
         name: it.name,
+        code: it.code,
         unit: it.unit,
         count: it.start,
         startCount: it.start,

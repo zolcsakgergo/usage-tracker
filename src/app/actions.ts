@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 export type ItemDTO = {
   id: string;
   name: string;
+  code: string | null;
   unit: string;
   count: number;
   low: number;
@@ -25,6 +26,7 @@ export async function getItems(): Promise<ItemDTO[]> {
   return rows.map((r) => ({
     id: r.id,
     name: r.name,
+    code: r.code,
     unit: r.unit,
     count: r.count,
     low: r.lowThreshold,
@@ -371,6 +373,7 @@ export async function updateUser(input: {
 export type ItemAdminRow = {
   id: string;
   name: string;
+  code: string | null;
   unit: string;
   count: number;
   low: number;
@@ -384,6 +387,7 @@ export async function listItemsAdmin(): Promise<ItemAdminRow[]> {
   return rows.map((r) => ({
     id: r.id,
     name: r.name,
+    code: r.code,
     unit: r.unit,
     count: r.count,
     low: r.lowThreshold,
@@ -395,6 +399,7 @@ export async function listItemsAdmin(): Promise<ItemAdminRow[]> {
 export async function updateItem(input: {
   id: string;
   name?: string;
+  code?: string | null;
   unit?: string;
   low?: number;
 }) {
@@ -403,6 +408,9 @@ export async function updateItem(input: {
     where: { id: input.id },
     data: {
       ...(input.name !== undefined ? { name: input.name.trim() } : {}),
+      ...(input.code !== undefined
+        ? { code: input.code === null ? null : input.code.trim() || null }
+        : {}),
       ...(input.unit !== undefined ? { unit: input.unit.trim() } : {}),
       ...(input.low !== undefined ? { lowThreshold: input.low } : {}),
     },
