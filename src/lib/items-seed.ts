@@ -1,5 +1,6 @@
-// Default 48 items for the toolbox (8 rows × 6 columns), Romanian labels.
-// Mirrors the design prototype.
+// Authoritative 48-compartment layout from "cutie stoc legris.xlsx" sheet 2.
+// 6 columns × 8 drawers — Legris pneumatic fittings.
+// Slot index is row-major (row 0 col 0 = A1 = slot 0, row 0 col 5 = A6 = slot 5, etc.)
 
 export type SeedItem = {
   id: string;
@@ -10,54 +11,62 @@ export type SeedItem = {
 };
 
 export const DEFAULT_ITEMS: SeedItem[] = [
-  { id: "m3-screws", name: "Șuruburi M3", unit: "buc", start: 240, low: 40 },
-  { id: "m4-screws", name: "Șuruburi M4", unit: "buc", start: 180, low: 30 },
-  { id: "m5-screws", name: "Șuruburi M5", unit: "buc", start: 120, low: 25 },
-  { id: "m6-screws", name: "Șuruburi M6", unit: "buc", start: 95, low: 20 },
-  { id: "m8-screws", name: "Șuruburi M8", unit: "buc", start: 60, low: 15 },
-  { id: "wood-screws", name: "Șuruburi lemn", unit: "buc", start: 320, low: 50 },
-  { id: "m3-nuts", name: "Piulițe M3", unit: "buc", start: 180, low: 30 },
-  { id: "m4-nuts", name: "Piulițe M4", unit: "buc", start: 150, low: 30 },
-  { id: "m5-nuts", name: "Piulițe M5", unit: "buc", start: 110, low: 25 },
-  { id: "m6-nuts", name: "Piulițe M6", unit: "buc", start: 85, low: 20 },
-  { id: "wing-nuts", name: "Piulițe fluture", unit: "buc", start: 40, low: 10 },
-  { id: "lock-nuts", name: "Piulițe autoblocante", unit: "buc", start: 70, low: 15 },
-  { id: "m3-wash", name: "Șaibe M3", unit: "buc", start: 200, low: 40 },
-  { id: "m4-wash", name: "Șaibe M4", unit: "buc", start: 180, low: 35 },
-  { id: "m5-wash", name: "Șaibe M5", unit: "buc", start: 140, low: 30 },
-  { id: "spring-wash", name: "Șaibe elastice", unit: "buc", start: 90, low: 20 },
-  { id: "o-rings", name: "Inele O", unit: "buc", start: 55, low: 12 },
-  { id: "grommets", name: "Garnituri", unit: "buc", start: 38, low: 10 },
-  { id: "hss-bits", name: "Burghie HSS", unit: "buc", start: 24, low: 6 },
-  { id: "masonry-bits", name: "Burghie zidărie", unit: "buc", start: 12, low: 4 },
-  { id: "wood-bits", name: "Burghie lemn", unit: "buc", start: 18, low: 5 },
-  { id: "spade-bits", name: "Burghie lopată", unit: "buc", start: 9, low: 3 },
-  { id: "step-bit", name: "Burghie conice", unit: "buc", start: 4, low: 2 },
-  { id: "countersink", name: "Adâncitoare", unit: "buc", start: 6, low: 2 },
-  { id: "ph1-bits", name: "Biți PH1", unit: "buc", start: 22, low: 6 },
-  { id: "ph2-bits", name: "Biți PH2", unit: "buc", start: 28, low: 8 },
-  { id: "pz2-bits", name: "Biți PZ2", unit: "buc", start: 20, low: 6 },
-  { id: "t20-bits", name: "Biți Torx T20", unit: "buc", start: 16, low: 5 },
-  { id: "hex-4", name: "Hex 4 mm", unit: "buc", start: 12, low: 3 },
-  { id: "hex-6", name: "Hex 6 mm", unit: "buc", start: 10, low: 3 },
-  { id: "zip-s", name: "Coliere · S", unit: "buc", start: 150, low: 30 },
-  { id: "zip-m", name: "Coliere · M", unit: "buc", start: 120, low: 25 },
-  { id: "zip-l", name: "Coliere · L", unit: "buc", start: 80, low: 20 },
-  { id: "heat-shrink", name: "Tub termocontract.", unit: "m", start: 22, low: 5 },
-  { id: "solder", name: "Cositor", unit: "m", start: 14, low: 3 },
-  { id: "flux", name: "Flux", unit: "ml", start: 80, low: 20 },
-  { id: "sand-80", name: "Șmirghel · 80", unit: "coli", start: 18, low: 5 },
-  { id: "sand-120", name: "Șmirghel · 120", unit: "coli", start: 22, low: 5 },
-  { id: "sand-220", name: "Șmirghel · 220", unit: "coli", start: 16, low: 5 },
-  { id: "wire-brush", name: "Perii sârmă", unit: "buc", start: 8, low: 2 },
-  { id: "steel-wool", name: "Lână de oțel", unit: "tamp", start: 14, low: 4 },
-  { id: "putty", name: "Chit", unit: "tub", start: 6, low: 2 },
-  { id: "blades", name: "Lame cutter", unit: "buc", start: 50, low: 12 },
-  { id: "saw-blades", name: "Pânze fierăstrău", unit: "buc", start: 12, low: 3 },
-  { id: "allen-keys", name: "Chei imbus", unit: "set", start: 5, low: 2 },
-  { id: "tape", name: "Rulete", unit: "buc", start: 4, low: 2 },
-  { id: "markers", name: "Markere", unit: "buc", start: 18, low: 5 },
-  { id: "pencils", name: "Creioane", unit: "buc", start: 32, low: 8 },
+  // Row A (slots 0–5)
+  { id: "pcci-04-m5", name: "4 Drept M5", unit: "buc", start: 0, low: 3 },
+  { id: "pcci-06-18", name: "6 Drept 1/8", unit: "buc", start: 0, low: 3 },
+  { id: "pcci-08-18", name: "8 Drept 1/8", unit: "buc", start: 0, low: 3 },
+  { id: "pcci-10-18", name: "10 Drept 1/8", unit: "buc", start: 0, low: 3 },
+  { id: "pcci-12-14", name: "12 Drept 1/4", unit: "buc", start: 0, low: 3 },
+  { id: "pul-04", name: "4 L", unit: "buc", start: 0, low: 3 },
+  // Row B (slots 6–11)
+  { id: "pcci-04-18", name: "4 Drept 1/8", unit: "buc", start: 0, low: 3 },
+  { id: "pcci-06-14", name: "6 Drept 1/4", unit: "buc", start: 0, low: 3 },
+  { id: "pcci-08-14", name: "8 Drept 1/4", unit: "buc", start: 0, low: 3 },
+  { id: "pcci-10-14", name: "10 Drept 1/4", unit: "buc", start: 0, low: 3 },
+  { id: "puc-12", name: "12 Legătură", unit: "buc", start: 0, low: 3 },
+  { id: "py-04", name: "4 Y", unit: "buc", start: 0, low: 3 },
+  // Row C (slots 12–17)
+  { id: "pcci-04-14", name: "4 Drept 1/4", unit: "buc", start: 0, low: 3 },
+  { id: "pcci-06-38", name: "6 Drept 3/8", unit: "buc", start: 0, low: 3 },
+  { id: "pcci-08-38", name: "8 Drept 3/8", unit: "buc", start: 0, low: 3 },
+  { id: "pcci-10-38", name: "10 Drept 3/8", unit: "buc", start: 0, low: 3 },
+  { id: "ptci-12-14", name: "12 T 1/4", unit: "buc", start: 0, low: 3 },
+  { id: "pul-06", name: "6 L", unit: "buc", start: 0, low: 3 },
+  // Row D (slots 18–23)
+  { id: "puc-04", name: "4 Legătură", unit: "buc", start: 0, low: 3 },
+  { id: "puc-06", name: "6 Legătură", unit: "buc", start: 0, low: 3 },
+  { id: "puc-08", name: "8 Legătură", unit: "buc", start: 0, low: 3 },
+  { id: "pcci-10-12", name: "10 Drept 1/2", unit: "buc", start: 0, low: 3 },
+  { id: "ptci-12-38", name: "12 T 3/8", unit: "buc", start: 0, low: 3 },
+  { id: "py-06", name: "6 Y", unit: "buc", start: 0, low: 3 },
+  // Row E (slots 24–29)
+  { id: "ptci-04-m5", name: "4 T M5", unit: "buc", start: 0, low: 3 },
+  { id: "ptci-06-18", name: "6 T 1/8", unit: "buc", start: 0, low: 3 },
+  { id: "ptci-08-18", name: "8 T 1/8", unit: "buc", start: 0, low: 3 },
+  { id: "puc-10", name: "10 Legătură", unit: "buc", start: 0, low: 3 },
+  { id: "put-12", name: "12 T simplu", unit: "buc", start: 0, low: 3 },
+  { id: "pul-08", name: "8 L", unit: "buc", start: 0, low: 3 },
+  // Row F (slots 30–35)
+  { id: "ptci-04-18", name: "4 T 1/8", unit: "buc", start: 0, low: 3 },
+  { id: "ptci-06-14", name: "6 T 1/4", unit: "buc", start: 0, low: 3 },
+  { id: "ptci-08-14", name: "8 T 1/4", unit: "buc", start: 0, low: 3 },
+  { id: "ptci-10-38", name: "10 T 3/8", unit: "buc", start: 0, low: 3 },
+  { id: "plci-12-14", name: "12 Cot 1/4", unit: "buc", start: 0, low: 3 },
+  { id: "py-08", name: "8 Y", unit: "buc", start: 0, low: 3 },
+  // Row G (slots 36–41)
+  { id: "plci-04-m5", name: "4 Cot M5", unit: "buc", start: 0, low: 3 },
+  { id: "ptci-06-38", name: "6 T 3/8", unit: "buc", start: 0, low: 3 },
+  { id: "put-08", name: "8 T simplu", unit: "buc", start: 0, low: 3 },
+  { id: "put-10", name: "10 T simplu", unit: "buc", start: 0, low: 3 },
+  { id: "plci-12-38", name: "12 Cot 3/8", unit: "buc", start: 0, low: 3 },
+  { id: "pul-10", name: "10 L", unit: "buc", start: 0, low: 3 },
+  // Row H (slots 42–47)
+  { id: "put-04", name: "4 T simplu", unit: "buc", start: 0, low: 3 },
+  { id: "plci-06-18", name: "6 Cot 1/8", unit: "buc", start: 0, low: 3 },
+  { id: "plci-08-18", name: "8 Cot 1/8", unit: "buc", start: 0, low: 3 },
+  { id: "plci-10-14", name: "10 Cot 1/4", unit: "buc", start: 0, low: 3 },
+  { id: "reserve-h5", name: "Liber · rezervă", unit: "buc", start: 0, low: 0 },
+  { id: "py-10", name: "10 Y", unit: "buc", start: 0, low: 3 },
 ];
 
 export const DEFAULT_USERS = [

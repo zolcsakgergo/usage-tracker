@@ -14,6 +14,35 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
+  const wipe = process.argv.includes("--wipe");
+  if (wipe) {
+    console.log("Wiping transactions, sessions, audit log, and items…");
+    await prisma.transaction.deleteMany({});
+    await prisma.session.deleteMany({});
+    await prisma.auditLog.deleteMany({});
+    await prisma.item.deleteMany({});
+  }
+
+  // Re-stage slot indexes safely: move every existing item to a high temporary
+  // slot first so we don't collide with the unique constraint when re-assigning.
+  const existing = await prisma.item.findMany({ select: { id: true } });
+  for (let i = 0; i < existing.length; i++) {
+    await prisma.item.update({
+      where: { id: existing[i].id },
+      data: { slotIndex: 1000 + i },
+    });
+  }
+  // Remove any items not in the new layout (only safe when wipe drops transactions too).
+  if (wipe) {
+    const keepIds = new Set(DEFAULT_ITEMS.map((it) => it.id));
+    const toDelete = existing.filter((e) => !keepIds.has(e.id));
+    if (toDelete.length > 0) {
+      await prisma.item.deleteMany({
+        where: { id: { in: toDelete.map((e) => e.id) } },
+      });
+    }
+  }
+
   for (let i = 0; i < DEFAULT_ITEMS.length; i++) {
     const it = DEFAULT_ITEMS[i];
     await prisma.item.upsert({
