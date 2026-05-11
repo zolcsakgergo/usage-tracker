@@ -501,6 +501,145 @@ export async function exportBackup(): Promise<{
   };
 }
 
+function csvCell(v: unknown): string {
+  if (v === null || v === undefined) return "";
+  const s = String(v);
+  if (/[",\n\r;]/.test(s)) {
+    return `"${s.replace(/"/g, '""')}"`;
+  }
+  return s;
+}
+
+function csvRow(cells: unknown[]): string {
+  return cells.map(csvCell).join(",");
+}
+
+export async function exportMonthlyReport(input: {
+  year: number;
+  month: number; // 1-12
+}): Promise<string> {
+  await requireAdmin();
+  const { year, month } = input;
+  if (month < 1 || month > 12) throw new Error("invalid-month");
+
+  // Pull a wide window so Bucharest-timezone edges don't slip through.
+  const wideStart = new Date(Date.UTC(year, month - 2, 25));
+  const wideEnd = new Date(Date.UTC(year, month + 1, 5));
+
+  const monthFmt = new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Europe/Bucharest",
+    year: "numeric",
+    month: "2-digit",
+  });
+  const dtFmt = new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Europe/Bucharest",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+  const targetKey = `${year}-${String(month).padStart(2, "0")}`;
+  const monthLabel = new Intl.DateTimeFormat("ro-RO", {
+    timeZone: "Europe/Bucharest",
+    year: "numeric",
+    month: "long",
+  }).format(new Date(Date.UTC(year, month - 1, 15)));
+
+  const [allTxs, items] = await Promise.all([
+    prisma.transaction.findMany({
+      where: { ts: { gte: wideStart, lt: wideEnd } },
+      include: { item: true, user: true },
+      orderBy: { ts: "asc" },
+    }),
+    prisma.item.findMany({ orderBy: { slotIndex: "asc" } }),
+  ]);
+
+  // Filter to txs whose Bucharest-local month matches.
+  const txs = allTxs.filter((t) => monthFmt.format(t.ts) === targetKey);
+
+  const usage = new Map<string, { takes: number; returns: number }>();
+  for (const t of txs) {
+    const cur = usage.get(t.itemId) ?? { takes: 0, returns: 0 };
+    if (t.type === "take") cur.takes += t.qty;
+    else cur.returns += t.qty;
+    usage.set(t.itemId, cur);
+  }
+
+  const slotLabel = (idx: number) =>
+    `${String.fromCharCode(65 + Math.floor(idx / 6))}${(idx % 6) + 1}`;
+
+  const lines: string[] = [];
+  lines.push(csvRow([`Raport lunar · ${monthLabel}`]));
+  lines.push(csvRow([`Generat: ${dtFmt.format(new Date())}`]));
+  lines.push("");
+  lines.push(csvRow(["Rezumat utilizare"]));
+  lines.push(
+    csvRow([
+      "Slot",
+      "Nume",
+      "Cod",
+      "Cod Contabilitate",
+      "Unitate",
+      "Scoateri",
+      "Returnări",
+      "Consum net",
+      "Stoc curent",
+      "Prag alarmă",
+    ])
+  );
+  for (const it of items) {
+    const u = usage.get(it.id) ?? { takes: 0, returns: 0 };
+    lines.push(
+      csvRow([
+        slotLabel(it.slotIndex),
+        it.name,
+        it.code ?? "",
+        it.accountingCode ?? "",
+        it.unit,
+        u.takes,
+        u.returns,
+        u.takes - u.returns,
+        it.count,
+        it.lowThreshold,
+      ])
+    );
+  }
+
+  lines.push("");
+  lines.push(csvRow([`Istoric tranzacții · ${monthLabel}`]));
+  lines.push(
+    csvRow([
+      "Timp",
+      "Slot",
+      "Nume articol",
+      "Cod",
+      "Cod Contabilitate",
+      "Utilizator",
+      "Tip",
+      "Cantitate",
+    ])
+  );
+  for (const t of txs) {
+    lines.push(
+      csvRow([
+        dtFmt.format(t.ts),
+        slotLabel(t.item.slotIndex),
+        t.item.name,
+        t.item.code ?? "",
+        t.item.accountingCode ?? "",
+        t.user.name,
+        t.type === "take" ? "Scoatere" : "Returnare",
+        t.qty,
+      ])
+    );
+  }
+
+  // UTF-8 BOM so Excel opens Romanian diacritics correctly.
+  return "﻿" + lines.join("\r\n") + "\r\n";
+}
+
 export async function factoryReset() {
   const admin = await requireAdmin();
   await prisma.$transaction([

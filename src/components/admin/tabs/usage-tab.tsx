@@ -1,8 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { getDashboardStats, type DashboardStats } from "@/app/actions";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  exportMonthlyReport,
+  getDashboardStats,
+  type DashboardStats,
+} from "@/app/actions";
 
 export function UsageTab({ stats: initialStats }: { stats: DashboardStats }) {
   const [stats, setStats] = useState<DashboardStats>(initialStats);
@@ -21,7 +34,89 @@ export function UsageTab({ stats: initialStats }: { stats: DashboardStats }) {
     };
   }, []);
 
-  return inner(stats);
+  return (
+    <div className="flex flex-col gap-6">
+      <MonthlyReportCard />
+      {inner(stats)}
+    </div>
+  );
+}
+
+function MonthlyReportCard() {
+  const now = new Date();
+  const months = useMemo(() => {
+    const list: { value: string; label: string }[] = [];
+    const fmt = new Intl.DateTimeFormat("ro-RO", {
+      timeZone: "Europe/Bucharest",
+      year: "numeric",
+      month: "long",
+    });
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 15);
+      const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      list.push({ value, label: fmt.format(d) });
+    }
+    return list;
+  }, [now]);
+
+  const [picked, setPicked] = useState(months[0].value);
+  const [pending, startTransition] = useTransition();
+
+  function download() {
+    startTransition(async () => {
+      const [yearStr, monthStr] = picked.split("-");
+      const year = Number(yearStr);
+      const month = Number(monthStr);
+      const csv = await exportMonthlyReport({ year, month });
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `raport-${picked}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  return (
+    <Card className="rounded-[10px] border-[var(--kiosk-line)] bg-[var(--kiosk-surface)]">
+      <CardContent className="flex flex-col gap-3 p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="mono text-[10.5px] uppercase tracking-[0.14em] text-[var(--kiosk-ink-soft)]">
+              Raport lunar pentru comenzi
+            </div>
+            <div className="mt-1 text-[18px] font-medium">
+              Export CSV · utilizare + istoric
+            </div>
+            <div className="mt-1 text-[13px] text-[var(--kiosk-ink-mute)]">
+              Conține: pentru fiecare articol — scoateri, returnări, consum net,
+              stoc curent, cod, cod contabilitate. Plus istoricul complet al
+              tranzacțiilor din lună.
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Select value={picked} onValueChange={(v) => v && setPicked(v)}>
+            <SelectTrigger className="w-[220px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {months.map((m) => (
+                <SelectItem key={m.value} value={m.value}>
+                  {m.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button onClick={download} disabled={pending}>
+            <Download className="mr-1.5 h-4 w-4" />
+            {pending ? "Se generează…" : "Descarcă CSV"}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 function inner(stats: DashboardStats) {
