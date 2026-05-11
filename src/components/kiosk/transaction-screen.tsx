@@ -1,6 +1,6 @@
 "use client";
 
-import { X } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import { T, slotFor, stockTier } from "@/lib/i18n";
 import { type ItemDTO, type UserDTO } from "@/app/actions";
 
@@ -17,9 +17,18 @@ type Props = {
   onPlus: () => void;
   onMinus: () => void;
   onDone: () => void;
+  onBack?: () => void;
 };
 
-export function TransactionScreen({ item, user, sessionTx, onPlus, onMinus, onDone }: Props) {
+export function TransactionScreen({
+  item,
+  user,
+  sessionTx,
+  onPlus,
+  onMinus,
+  onDone,
+  onBack,
+}: Props) {
   const tier = stockTier(item.count, item.low);
   const cannotTake = item.count <= 0;
   const onhandColor =
@@ -137,13 +146,25 @@ export function TransactionScreen({ item, user, sessionTx, onPlus, onMinus, onDo
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={onDone}
-          className="h-[clamp(48px,7vh,68px)] w-full rounded-[10px] bg-[var(--kiosk-ink)] text-[clamp(13px,1.9vh,17px)] font-medium tracking-[0.005em] text-[var(--kiosk-bg)] transition hover:bg-[var(--kiosk-ink-2)] active:translate-y-px"
-        >
-          {T.done}
-        </button>
+        <div className="flex w-full gap-3">
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="flex h-[clamp(48px,7vh,68px)] flex-1 items-center justify-center gap-2 rounded-[10px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] text-[clamp(13px,1.9vh,16px)] font-medium tracking-[0.005em] text-[var(--kiosk-ink)] transition hover:border-[var(--kiosk-line-3)] hover:bg-[var(--kiosk-surface-2)] active:translate-y-px"
+            >
+              <ArrowLeft size={16} />
+              Alt articol
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onDone}
+            className="h-[clamp(48px,7vh,68px)] flex-1 rounded-[10px] bg-[var(--kiosk-ink)] text-[clamp(13px,1.9vh,17px)] font-medium tracking-[0.005em] text-[var(--kiosk-bg)] transition hover:bg-[var(--kiosk-ink-2)] active:translate-y-px"
+          >
+            {T.done}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import {
   Package,
   Settings,
   LogOut,
+  ShoppingCart,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ import {
 import { DashboardTab } from "./tabs/dashboard-tab";
 import { TransactionsTab } from "./tabs/transactions-tab";
 import { UsageTab } from "./tabs/usage-tab";
+import { OrdersTab } from "./tabs/orders-tab";
 import { UsersTab } from "./tabs/users-tab";
 import { ItemsTab } from "./tabs/items-tab";
 import { SettingsTab } from "./tabs/settings-tab";
@@ -38,6 +40,7 @@ const TABS = [
   { value: "dashboard", label: "Tablou de bord", Icon: LayoutDashboard },
   { value: "transactions", label: "Jurnal", Icon: ListOrdered },
   { value: "usage", label: "Utilizare", Icon: BarChart3 },
+  { value: "orders", label: "Comenzi", Icon: ShoppingCart },
   { value: "users", label: "Utilizatori", Icon: Users },
   { value: "items", label: "Articole", Icon: Package },
   { value: "settings", label: "Setări", Icon: Settings },
@@ -134,6 +137,9 @@ export function AdminShell({
         </TabsContent>
         <TabsContent value="usage">
           <UsageTab stats={initial.stats} />
+        </TabsContent>
+        <TabsContent value="orders">
+          <OrdersTab />
         </TabsContent>
         <TabsContent value="users">
           <UsersTab initial={initial.users} />

@@ -1,10 +1,10 @@
 "use client";
 
-import { Lock } from "lucide-react";
+import { Lock, LogOut, Search, X } from "lucide-react";
 import { Compartment } from "./compartment";
-import { T, stockTier } from "@/lib/i18n";
-import { type ItemDTO } from "@/app/actions";
-import { useEffect, useState } from "react";
+import { T, slotFor, stockTier } from "@/lib/i18n";
+import { type ItemDTO, type UserDTO } from "@/app/actions";
+import { useEffect, useMemo, useState } from "react";
 
 function Stat({
   label,
@@ -40,21 +40,42 @@ export function GridScreen({
   items,
   onPick,
   onAdmin,
+  activeUser,
+  sessionRemaining,
+  onEndSession,
 }: {
   items: ItemDTO[];
   onPick: (item: ItemDTO) => void;
   onAdmin: () => void;
+  activeUser?: UserDTO | null;
+  sessionRemaining?: number | null;
+  onEndSession?: () => void;
 }) {
   const total = items.reduce((s, i) => s + i.count, 0);
   const lowCount = items.filter((i) => stockTier(i.count, i.low) === "low").length;
   const empty = items.filter((i) => stockTier(i.count, i.low) === "empty").length;
 
   const [now, setNow] = useState<Date | null>(null);
+  const [search, setSearch] = useState("");
+
   useEffect(() => {
     setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 30_000);
     return () => clearInterval(id);
   }, []);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter((it) => {
+      const slot = slotFor(it.slot).toLowerCase();
+      return (
+        it.name.toLowerCase().includes(q) ||
+        (it.code ?? "").toLowerCase().includes(q) ||
+        slot.includes(q)
+      );
+    });
+  }, [items, search]);
 
   return (
     <div className="relative z-[1] flex min-h-screen flex-col sm:h-screen">
@@ -89,6 +110,56 @@ export function GridScreen({
         </div>
       </header>
 
+      {activeUser && (
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--kiosk-line)] bg-[var(--kiosk-accent-soft)]/40 px-3 py-2 sm:px-6">
+          <div className="flex min-w-0 items-center gap-2 text-[var(--kiosk-ink)]">
+            <span className="mono shrink-0 rounded-full bg-[var(--kiosk-ink)] px-2 py-[2px] text-[10px] uppercase tracking-[0.1em] text-[var(--kiosk-bg)]">
+              Conectat
+            </span>
+            <span className="truncate text-[13px] font-medium">{activeUser.name}</span>
+            {sessionRemaining != null && (
+              <span className="mono shrink-0 text-[11px] text-[var(--kiosk-ink-soft)]">
+                · Auto-deconectare în {sessionRemaining}s
+              </span>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={onEndSession}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-[6px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] px-2.5 py-1 text-[11.5px] font-medium text-[var(--kiosk-ink-mute)] transition hover:border-[var(--kiosk-line-3)] hover:text-[var(--kiosk-ink)] active:translate-y-px"
+          >
+            <LogOut size={13} />
+            Ieși
+          </button>
+        </div>
+      )}
+
+      <div className="flex shrink-0 gap-2 px-3 pt-2 sm:px-6 sm:pt-3">
+        <div className="relative flex-1">
+          <Search
+            size={14}
+            className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--kiosk-ink-soft)]"
+          />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Caută după nume, cod sau slot (ex. 10, M5, A1)"
+            className="mono w-full rounded-[6px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] py-1.5 pl-8 pr-8 text-[12.5px] text-[var(--kiosk-ink)] placeholder:text-[var(--kiosk-ink-dim)] focus:border-[var(--kiosk-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--kiosk-accent-soft)]"
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch("")}
+              className="absolute right-2 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded-full text-[var(--kiosk-ink-soft)] hover:bg-[var(--kiosk-bg-2)] hover:text-[var(--kiosk-ink)]"
+              aria-label="Șterge căutarea"
+            >
+              <X size={12} />
+            </button>
+          )}
+        </div>
+      </div>
+
       <div className="flex min-h-0 flex-1 gap-1.5 px-2 pb-2 pt-2 sm:gap-2.5 sm:px-2 sm:pb-1.5 md:px-6 md:pt-3">
         {/* Row letters: hidden on phones */}
         <div className="mono hidden w-3.5 flex-col pt-[20px] text-[clamp(8px,1vh,11px)] text-[var(--kiosk-ink-dim)] sm:flex md:w-5">
@@ -108,11 +179,17 @@ export function GridScreen({
             ))}
           </div>
           {/* Phone: 3 cols × auto rows (scrollable). sm+: 6 × 8 fit-to-viewport. */}
-          <div className="grid min-h-0 flex-1 grid-cols-3 gap-2 [grid-auto-rows:minmax(86px,1fr)] sm:grid-cols-6 sm:grid-rows-8 sm:gap-1.5 sm:[grid-auto-rows:auto] md:gap-2.5">
-            {items.map((it) => (
-              <Compartment key={it.id} item={it} onClick={onPick} />
-            ))}
-          </div>
+          {filtered.length === 0 ? (
+            <div className="flex min-h-0 flex-1 items-center justify-center rounded-[8px] border border-dashed border-[var(--kiosk-line-2)] bg-[var(--kiosk-surface-2)] p-6 text-center text-[13px] text-[var(--kiosk-ink-soft)]">
+              Niciun articol nu corespunde căutării „{search}".
+            </div>
+          ) : (
+            <div className="grid min-h-0 flex-1 grid-cols-3 gap-2 [grid-auto-rows:minmax(86px,1fr)] sm:grid-cols-6 sm:grid-rows-8 sm:gap-1.5 sm:[grid-auto-rows:auto] md:gap-2.5">
+              {filtered.map((it) => (
+                <Compartment key={it.id} item={it} onClick={onPick} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

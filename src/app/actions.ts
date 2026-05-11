@@ -640,6 +640,85 @@ export async function exportMonthlyReport(input: {
   return "﻿" + lines.join("\r\n") + "\r\n";
 }
 
+export type ReorderRow = {
+  id: string;
+  slot: number;
+  name: string;
+  code: string | null;
+  accountingCode: string | null;
+  unit: string;
+  count: number;
+  low: number;
+  windowDays: number;
+  takes: number;
+  avgPerDay: number;
+  daysRemaining: number | null; // null when avgPerDay = 0
+  suggestedOrder: number;
+  urgency: "critical" | "low" | "watch" | "ok";
+};
+
+export async function getReorderSuggestions(input?: {
+  windowDays?: number;
+  coverDays?: number;
+}): Promise<ReorderRow[]> {
+  await requireAdmin();
+  const windowDays = Math.max(7, Math.min(180, input?.windowDays ?? 30));
+  const coverDays = Math.max(7, Math.min(365, input?.coverDays ?? 30));
+
+  const since = new Date(Date.now() - windowDays * 24 * 3600 * 1000);
+  const [items, takes] = await Promise.all([
+    prisma.item.findMany({ orderBy: { slotIndex: "asc" } }),
+    prisma.transaction.groupBy({
+      by: ["itemId"],
+      where: { ts: { gte: since }, type: "take" },
+      _sum: { qty: true },
+    }),
+  ]);
+  const takeByItem = new Map(takes.map((t) => [t.itemId, t._sum.qty ?? 0]));
+
+  const rows: ReorderRow[] = items.map((it) => {
+    const t = takeByItem.get(it.id) ?? 0;
+    const avg = t / windowDays;
+    const daysRemaining = avg > 0 ? it.count / avg : null;
+    const targetStock = Math.ceil(avg * coverDays);
+    const suggested = Math.max(0, targetStock - it.count);
+
+    let urgency: ReorderRow["urgency"] = "ok";
+    if (it.count <= 0) urgency = "critical";
+    else if (it.count <= it.lowThreshold) urgency = "low";
+    else if (daysRemaining !== null && daysRemaining <= coverDays) urgency = "watch";
+
+    return {
+      id: it.id,
+      slot: it.slotIndex,
+      name: it.name,
+      code: it.code,
+      accountingCode: it.accountingCode,
+      unit: it.unit,
+      count: it.count,
+      low: it.lowThreshold,
+      windowDays,
+      takes: t,
+      avgPerDay: Math.round(avg * 100) / 100,
+      daysRemaining:
+        daysRemaining === null ? null : Math.round(daysRemaining * 10) / 10,
+      suggestedOrder: suggested,
+      urgency,
+    };
+  });
+
+  // Sort: critical → low → watch → ok; within each, by days remaining asc.
+  const rank = { critical: 0, low: 1, watch: 2, ok: 3 } as const;
+  rows.sort((a, b) => {
+    const r = rank[a.urgency] - rank[b.urgency];
+    if (r !== 0) return r;
+    const ad = a.daysRemaining ?? Infinity;
+    const bd = b.daysRemaining ?? Infinity;
+    return ad - bd;
+  });
+  return rows;
+}
+
 export async function factoryReset() {
   const admin = await requireAdmin();
   await prisma.$transaction([
