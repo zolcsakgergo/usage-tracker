@@ -1,0 +1,85 @@
+// Default 48 items for the toolbox (8 rows × 6 columns), Romanian labels.
+// Mirrors the design prototype.
+
+export type SeedItem = {
+  id: string;
+  name: string;
+  unit: string;
+  start: number;
+  low: number;
+};
+
+export const DEFAULT_ITEMS: SeedItem[] = [
+  { id: "m3-screws", name: "Șuruburi M3", unit: "buc", start: 240, low: 40 },
+  { id: "m4-screws", name: "Șuruburi M4", unit: "buc", start: 180, low: 30 },
+  { id: "m5-screws", name: "Șuruburi M5", unit: "buc", start: 120, low: 25 },
+  { id: "m6-screws", name: "Șuruburi M6", unit: "buc", start: 95, low: 20 },
+  { id: "m8-screws", name: "Șuruburi M8", unit: "buc", start: 60, low: 15 },
+  { id: "wood-screws", name: "Șuruburi lemn", unit: "buc", start: 320, low: 50 },
+  { id: "m3-nuts", name: "Piulițe M3", unit: "buc", start: 180, low: 30 },
+  { id: "m4-nuts", name: "Piulițe M4", unit: "buc", start: 150, low: 30 },
+  { id: "m5-nuts", name: "Piulițe M5", unit: "buc", start: 110, low: 25 },
+  { id: "m6-nuts", name: "Piulițe M6", unit: "buc", start: 85, low: 20 },
+  { id: "wing-nuts", name: "Piulițe fluture", unit: "buc", start: 40, low: 10 },
+  { id: "lock-nuts", name: "Piulițe autoblocante", unit: "buc", start: 70, low: 15 },
+  { id: "m3-wash", name: "Șaibe M3", unit: "buc", start: 200, low: 40 },
+  { id: "m4-wash", name: "Șaibe M4", unit: "buc", start: 180, low: 35 },
+  { id: "m5-wash", name: "Șaibe M5", unit: "buc", start: 140, low: 30 },
+  { id: "spring-wash", name: "Șaibe elastice", unit: "buc", start: 90, low: 20 },
+  { id: "o-rings", name: "Inele O", unit: "buc", start: 55, low: 12 },
+  { id: "grommets", name: "Garnituri", unit: "buc", start: 38, low: 10 },
+  { id: "hss-bits", name: "Burghie HSS", unit: "buc", start: 24, low: 6 },
+  { id: "masonry-bits", name: "Burghie zidărie", unit: "buc", start: 12, low: 4 },
+  { id: "wood-bits", name: "Burghie lemn", unit: "buc", start: 18, low: 5 },
+  { id: "spade-bits", name: "Burghie lopată", unit: "buc", start: 9, low: 3 },
+  { id: "step-bit", name: "Burghie conice", unit: "buc", start: 4, low: 2 },
+  { id: "countersink", name: "Adâncitoare", unit: "buc", start: 6, low: 2 },
+  { id: "ph1-bits", name: "Biți PH1", unit: "buc", start: 22, low: 6 },
+  { id: "ph2-bits", name: "Biți PH2", unit: "buc", start: 28, low: 8 },
+  { id: "pz2-bits", name: "Biți PZ2", unit: "buc", start: 20, low: 6 },
+  { id: "t20-bits", name: "Biți Torx T20", unit: "buc", start: 16, low: 5 },
+  { id: "hex-4", name: "Hex 4 mm", unit: "buc", start: 12, low: 3 },
+  { id: "hex-6", name: "Hex 6 mm", unit: "buc", start: 10, low: 3 },
+  { id: "zip-s", name: "Coliere · S", unit: "buc", start: 150, low: 30 },
+  { id: "zip-m", name: "Coliere · M", unit: "buc", start: 120, low: 25 },
+  { id: "zip-l", name: "Coliere · L", unit: "buc", start: 80, low: 20 },
+  { id: "heat-shrink", name: "Tub termocontract.", unit: "m", start: 22, low: 5 },
+  { id: "solder", name: "Cositor", unit: "m", start: 14, low: 3 },
+  { id: "flux", name: "Flux", unit: "ml", start: 80, low: 20 },
+  { id: "sand-80", name: "Șmirghel · 80", unit: "coli", start: 18, low: 5 },
+  { id: "sand-120", name: "Șmirghel · 120", unit: "coli", start: 22, low: 5 },
+  { id: "sand-220", name: "Șmirghel · 220", unit: "coli", start: 16, low: 5 },
+  { id: "wire-brush", name: "Perii sârmă", unit: "buc", start: 8, low: 2 },
+  { id: "steel-wool", name: "Lână de oțel", unit: "tamp", start: 14, low: 4 },
+  { id: "putty", name: "Chit", unit: "tub", start: 6, low: 2 },
+  { id: "blades", name: "Lame cutter", unit: "buc", start: 50, low: 12 },
+  { id: "saw-blades", name: "Pânze fierăstrău", unit: "buc", start: 12, low: 3 },
+  { id: "allen-keys", name: "Chei imbus", unit: "set", start: 5, low: 2 },
+  { id: "tape", name: "Rulete", unit: "buc", start: 4, low: 2 },
+  { id: "markers", name: "Markere", unit: "buc", start: 18, low: 5 },
+  { id: "pencils", name: "Creioane", unit: "buc", start: 32, low: 8 },
+];
+
+export const DEFAULT_USERS = [
+  { pin: "10", name: "VIRAG GHEORGHE", role: "Tehnician" },
+  { pin: "12", name: "ZOLCSAK SANDOR", role: "Administrator" },
+  { pin: "124", name: "BESENYODI FERENC CSABA", role: "Tehnician" },
+  { pin: "249", name: "PUSKAS KAROLY", role: "Tehnician" },
+  { pin: "562", name: "INCZE FODOR SANDOR ISTVAN", role: "Tehnician" },
+  { pin: "653", name: "DRAGOS VASILE", role: "Tehnician" },
+  { pin: "674", name: "CSOKASI TAMAS GABOR", role: "Tehnician" },
+  { pin: "956", name: "CORDIS FLORIN GHEORGHE", role: "Tehnician" },
+  { pin: "1280", name: "TURCAS IOAN MARCEL", role: "Tehnician" },
+  { pin: "1365", name: "SOMI ZOLTAN ATTILA", role: "Tehnician" },
+  { pin: "1376", name: "KURTI CSABA", role: "Tehnician" },
+  { pin: "1481", name: "GERGELY NORBERT", role: "Tehnician" },
+  { pin: "1816", name: "BOTOS LORAND", role: "Tehnician" },
+  { pin: "1830", name: "MAJER ALFRED ADRIAN", role: "Tehnician" },
+  { pin: "1985", name: "NAGY NICOLAE ROBERT", role: "Tehnician" },
+  { pin: "1991", name: "ERNI ZSOLT HERBERT", role: "Administrator" },
+  { pin: "2024", name: "NAGY TAMAS ISTVAN", role: "Tehnician" },
+  { pin: "2045", name: "KOVACS ADALBERT", role: "Tehnician" },
+  { pin: "2053", name: "LUKACS JANOS LORANT", role: "Tehnician" },
+  { pin: "2072", name: "PUSKAS KAROLY PAL", role: "Tehnician" },
+  { pin: "2087", name: "MARASESCU VIRGIL ION", role: "Tehnician" },
+];

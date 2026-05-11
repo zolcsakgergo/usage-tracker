@@ -1,0 +1,95 @@
+// Toolbox Usage Tracker — Prisma schema
+// Target: Supabase Postgres. Use DIRECT_URL for migrations, DATABASE_URL for pooled runtime.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Item {
+  id           String        @id
+  name         String
+  unit         String
+  count        Int           @default(0)
+  startCount   Int           @map("start_count")
+  lowThreshold Int           @map("low_threshold")
+  slotIndex    Int           @unique @map("slot_index")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  transactions Transaction[]
+
+  @@map("items")
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  role         String
+  pinHash      String        @map("pin_hash")
+  pinLookup    String        @unique @map("pin_lookup")
+  active       Boolean       @default(true)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  transactions Transaction[]
+  sessions     Session[]
+
+  @@map("users")
+}
+
+enum TxType {
+  take
+  return_
+
+  @@map("tx_type")
+}
+
+model Transaction {
+  id        Int      @id @default(autoincrement())
+  ts        DateTime @default(now())
+  item      Item     @relation(fields: [itemId], references: [id])
+  itemId    String   @map("item_id")
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @map("user_id")
+  type      TxType
+  qty       Int      @default(1)
+  sessionId String?  @map("session_id")
+
+  @@index([ts])
+  @@index([itemId, ts])
+  @@index([userId, ts])
+  @@map("transactions")
+}
+
+model Session {
+  id        String    @id @default(cuid())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String    @map("user_id")
+  startedAt DateTime  @default(now()) @map("started_at")
+  endedAt   DateTime? @map("ended_at")
+  ipHash    String?   @map("ip_hash")
+
+  @@index([userId, startedAt])
+  @@map("sessions")
+}
+
+model AuditLog {
+  id       Int      @id @default(autoincrement())
+  ts       DateTime @default(now())
+  actor    String
+  action   String
+  target   String?
+  metadata Json?
+
+  @@index([ts])
+  @@map("audit_log")
+}
+
+model Setting {
+  key   String @id
+  value Json
+
+  @@map("settings")
+}
