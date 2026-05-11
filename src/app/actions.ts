@@ -374,6 +374,7 @@ export type ItemAdminRow = {
   id: string;
   name: string;
   code: string | null;
+  accountingCode: string | null;
   unit: string;
   count: number;
   low: number;
@@ -388,6 +389,7 @@ export async function listItemsAdmin(): Promise<ItemAdminRow[]> {
     id: r.id,
     name: r.name,
     code: r.code,
+    accountingCode: r.accountingCode,
     unit: r.unit,
     count: r.count,
     low: r.lowThreshold,
@@ -400,6 +402,7 @@ export async function updateItem(input: {
   id: string;
   name?: string;
   code?: string | null;
+  accountingCode?: string | null;
   unit?: string;
   low?: number;
 }) {
@@ -410,6 +413,14 @@ export async function updateItem(input: {
       ...(input.name !== undefined ? { name: input.name.trim() } : {}),
       ...(input.code !== undefined
         ? { code: input.code === null ? null : input.code.trim() || null }
+        : {}),
+      ...(input.accountingCode !== undefined
+        ? {
+            accountingCode:
+              input.accountingCode === null
+                ? null
+                : input.accountingCode.trim() || null,
+          }
         : {}),
       ...(input.unit !== undefined ? { unit: input.unit.trim() } : {}),
       ...(input.low !== undefined ? { lowThreshold: input.low } : {}),

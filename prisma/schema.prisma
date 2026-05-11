@@ -10,10 +10,11 @@ datasource db {
 }
 
 model Item {
-  id           String        @id
-  name         String
-  code         String?
-  unit         String
+  id              String        @id
+  name            String
+  code            String?
+  accountingCode  String?       @map("accounting_code")
+  unit            String
   count        Int           @default(0)
   startCount   Int           @map("start_count")
   lowThreshold Int           @map("low_threshold")

@@ -44,10 +44,18 @@ export function ItemsTab({ initial }: { initial: ItemAdminRow[] }) {
     if (!editing) return;
     const name = String(form.get("name") ?? "").trim();
     const code = String(form.get("code") ?? "").trim();
+    const accountingCode = String(form.get("accountingCode") ?? "").trim();
     const unit = String(form.get("unit") ?? "").trim();
     const low = Number(form.get("low"));
     startTransition(async () => {
-      await updateItem({ id: editing.id, name, code: code || null, unit, low });
+      await updateItem({
+        id: editing.id,
+        name,
+        code: code || null,
+        accountingCode: accountingCode || null,
+        unit,
+        low,
+      });
       setEditing(null);
       await refresh();
     });
@@ -81,6 +89,7 @@ export function ItemsTab({ initial }: { initial: ItemAdminRow[] }) {
                 <TableHead className="w-[80px]">Slot</TableHead>
                 <TableHead>Nume</TableHead>
                 <TableHead className="w-[130px]">Cod</TableHead>
+                <TableHead className="w-[150px]">Cod Contabilitate</TableHead>
                 <TableHead className="w-[90px]">Unitate</TableHead>
                 <TableHead className="w-[100px] text-right">Stoc</TableHead>
                 <TableHead className="w-[120px] text-right">Prag alarmă</TableHead>
@@ -99,6 +108,9 @@ export function ItemsTab({ initial }: { initial: ItemAdminRow[] }) {
                     <TableCell className="font-medium">{it.name}</TableCell>
                     <TableCell className="mono text-[12.5px] text-[var(--kiosk-ink-soft)]">
                       {it.code ?? "—"}
+                    </TableCell>
+                    <TableCell className="mono text-[12.5px] text-[var(--kiosk-ink-soft)]">
+                      {it.accountingCode ?? "—"}
                     </TableCell>
                     <TableCell className="mono">{it.unit}</TableCell>
                     <TableCell className="mono text-right">{it.count}</TableCell>
@@ -156,6 +168,15 @@ export function ItemsTab({ initial }: { initial: ItemAdminRow[] }) {
                     name="code"
                     defaultValue={editing.code ?? ""}
                     placeholder="ex. PCCI 04-M5"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="i-acc">Cod Contabilitate</Label>
+                  <Input
+                    id="i-acc"
+                    name="accountingCode"
+                    defaultValue={editing.accountingCode ?? ""}
+                    placeholder="opțional"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">

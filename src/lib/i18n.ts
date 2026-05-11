@@ -1,5 +1,5 @@
 export const T = {
-  appTitle: "Cutie de scule · Stația 3",
+  appTitle: "Cutie de scule · Stația 1",
   appSub: "Atinge un compartiment pentru a înregistra utilizarea",
   inStock: "În stoc",
   low: "Aproape gol",

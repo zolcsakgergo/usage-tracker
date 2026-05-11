@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { GridScreen } from "./grid-screen";
 import { Keypad } from "./keypad";
 import { TransactionScreen, type SessionTx } from "./transaction-screen";
+import { FullscreenSpinner } from "./spinner";
 import { T } from "@/lib/i18n";
 import { useRouter } from "next/navigation";
 import {
@@ -34,6 +35,7 @@ export function KioskApp({ initialItems }: { initialItems: ItemDTO[] }) {
   const [items, setItems] = useState<ItemDTO[]>(initialItems);
   const [view, setView] = useState<View>({ name: "grid" });
   const [errorTick, setErrorTick] = useState(0);
+  const [busy, setBusy] = useState<null | string>(null);
   const inactivityRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Refresh items every 15s when on grid
@@ -71,25 +73,34 @@ export function KioskApp({ initialItems }: { initialItems: ItemDTO[] }) {
 
   async function submitCode(code: string) {
     if (view.name === "auth") {
-      const res = await verifyKioskPin(code);
-      if (!res.ok) {
-        setErrorTick((e) => e + 1);
-        return;
+      setBusy("Se verifică…");
+      try {
+        const res = await verifyKioskPin(code);
+        if (!res.ok) {
+          setErrorTick((e) => e + 1);
+          return;
+        }
+        setView({
+          name: "tx",
+          item: view.item,
+          user: res.user,
+          sessionId: res.sessionId,
+          sessionTx: [],
+        });
+      } finally {
+        setBusy(null);
       }
-      setView({
-        name: "tx",
-        item: view.item,
-        user: res.user,
-        sessionId: res.sessionId,
-        sessionTx: [],
-      });
     } else if (view.name === "admin-auth") {
+      setBusy("Se verifică…");
       const res = await verifyAdminPin(code);
       if (!res.ok) {
+        setBusy(null);
         setErrorTick((e) => e + 1);
         return;
       }
+      setBusy("Se deschide panoul…");
       router.push("/admin");
+      // keep `busy` set — the route loading.tsx takes over from here
     }
   }
 
@@ -138,6 +149,10 @@ export function KioskApp({ initialItems }: { initialItems: ItemDTO[] }) {
     const fresh = await getItems();
     setItems(fresh);
     setView({ name: "grid" });
+  }
+
+  if (busy) {
+    return <FullscreenSpinner label={busy} />;
   }
 
   if (view.name === "grid") {
