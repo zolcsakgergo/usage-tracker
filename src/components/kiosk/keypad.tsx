@@ -58,17 +58,18 @@ export function Keypad({ title, subtitle, item, errorTick, onSubmit, onCancel }:
   const cells = Array.from({ length: cellCount }, (_, i) => i < code.length);
 
   return (
-    <div className="relative z-[1] flex h-screen flex-col" style={{ background: "var(--kiosk-bg)" }}>
+    <div className="relative z-[1] flex min-h-screen flex-col sm:h-screen" style={{ background: "var(--kiosk-bg)" }}>
       <button
         type="button"
         onClick={onCancel}
         aria-label={T.cancel}
-        className="absolute right-[22px] top-[20px] z-10 grid h-12 w-12 place-items-center rounded-[6px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] text-[var(--kiosk-ink-mute)] shadow-[var(--kiosk-shadow-sm)] transition hover:border-[var(--kiosk-line-3)] hover:text-[var(--kiosk-ink)] active:scale-95"
+        className="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-[6px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] text-[var(--kiosk-ink-mute)] shadow-[var(--kiosk-shadow-sm)] transition hover:border-[var(--kiosk-line-3)] hover:text-[var(--kiosk-ink)] active:scale-95 sm:right-[22px] sm:top-[20px] sm:h-12 sm:w-12"
       >
-        <X size={22} strokeWidth={2} />
+        <X size={20} strokeWidth={2} className="sm:hidden" />
+        <X size={22} strokeWidth={2} className="hidden sm:block" />
       </button>
 
-      <div className="mx-auto grid w-full max-w-[1100px] flex-1 grid-cols-[1fr_minmax(280px,42%)] items-center gap-[clamp(16px,3vw,48px)] px-[clamp(16px,3vw,64px)] py-[clamp(16px,3vh,56px)]">
+      <div className="mx-auto flex w-full max-w-[1100px] flex-1 flex-col items-stretch gap-4 px-4 py-4 sm:grid sm:grid-cols-[1fr_minmax(280px,42%)] sm:items-center sm:gap-[clamp(16px,3vw,48px)] sm:px-[clamp(16px,3vw,64px)] sm:py-[clamp(16px,3vh,56px)]">
         <div className="flex min-w-0 flex-col gap-[clamp(12px,2vh,24px)]">
           {item ? (
             <div className="rounded-[10px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] px-[clamp(14px,2vw,24px)] py-[clamp(12px,2vh,22px)] shadow-[var(--kiosk-shadow-sm)]">

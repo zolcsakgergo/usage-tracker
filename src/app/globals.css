@@ -162,9 +162,15 @@
   background: var(--kiosk-bg);
   color: var(--kiosk-ink);
   letter-spacing: -0.003em;
-  overflow: hidden;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  overflow-y: auto;
+}
+/* Lock to viewport on real touchscreens / desktop only — phones need to scroll. */
+@media (min-width: 640px) {
+  .kiosk-body {
+    overflow: hidden;
+  }
 }
 .kiosk-body:has(.admin-scope) {
   overflow: auto;

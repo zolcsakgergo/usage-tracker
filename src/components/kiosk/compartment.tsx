@@ -39,7 +39,7 @@ export function Compartment({
       aria-label={`${item.name}, ${item.count} ${item.unit}`}
       className={[
         "relative flex min-h-0 flex-col gap-1 overflow-hidden rounded-[8px] border text-left",
-        "px-[clamp(6px,1vw,12px)] py-[clamp(4px,0.8vh,10px)]",
+        "px-2 py-2 sm:px-[clamp(6px,1vw,12px)] sm:py-[clamp(4px,0.8vh,10px)]",
         "shadow-[var(--kiosk-shadow-sm)] transition-all duration-100",
         "hover:-translate-y-px hover:border-[var(--kiosk-line-3)] hover:shadow-[var(--kiosk-shadow)]",
         "active:translate-y-0",
@@ -48,19 +48,19 @@ export function Compartment({
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute right-0 top-0 h-full w-[clamp(14px,2vw,28px)] border-l border-[rgba(26,26,23,0.04)]"
+        className="pointer-events-none absolute right-0 top-0 h-full w-3 border-l border-[rgba(26,26,23,0.04)] sm:w-[clamp(14px,2vw,28px)]"
         style={{
           backgroundImage:
             "repeating-linear-gradient(135deg, rgba(26,26,23,0.025) 0 2px, transparent 2px 8px)",
         }}
       />
-      <div className="relative z-[1] mr-[clamp(10px,1.5vw,18px)] flex min-h-0 flex-1 items-start gap-1.5">
-        <span className="mono mt-[2px] shrink-0 rounded-[3px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface-2)] px-1 py-[1px] text-[clamp(8px,1.1vh,10.5px)] leading-tight tracking-[0.05em] text-[var(--kiosk-ink-soft)]">
+      <div className="relative z-[1] mr-3 flex min-h-0 flex-1 items-start gap-1.5 sm:mr-[clamp(10px,1.5vw,18px)]">
+        <span className="mono mt-[2px] shrink-0 rounded-[3px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface-2)] px-1 py-[1px] text-[9px] leading-tight tracking-[0.05em] text-[var(--kiosk-ink-soft)] sm:text-[clamp(8px,1.1vh,10.5px)]">
           {slot}
         </span>
         <span className="flex min-w-0 flex-1 flex-col gap-[1px] overflow-hidden">
           <span
-            className="overflow-hidden text-[clamp(10px,1.55vh,15px)] font-medium leading-[1.15] tracking-[-0.005em] text-[var(--kiosk-ink)]"
+            className="overflow-hidden text-[12px] font-medium leading-[1.15] tracking-[-0.005em] text-[var(--kiosk-ink)] sm:text-[clamp(10px,1.55vh,15px)]"
             style={{
               display: "-webkit-box",
               WebkitLineClamp: 2,
@@ -71,7 +71,7 @@ export function Compartment({
             {item.name}
           </span>
           {item.code && (
-            <span className="mono truncate text-[clamp(7.5px,0.95vh,9.5px)] uppercase tracking-[0.08em] text-[var(--kiosk-ink-dim)]">
+            <span className="mono truncate text-[9px] uppercase tracking-[0.08em] text-[var(--kiosk-ink-dim)] sm:text-[clamp(7.5px,0.95vh,9.5px)]">
               {item.code}
             </span>
           )}
@@ -82,11 +82,11 @@ export function Compartment({
       </div>
       <div className="relative z-[1] mt-auto flex items-baseline gap-1">
         <span
-          className={`mono text-[clamp(16px,2.8vh,24px)] font-medium leading-none tracking-[-0.03em] ${s.count}`}
+          className={`mono text-[20px] font-medium leading-none tracking-[-0.03em] sm:text-[clamp(16px,2.8vh,24px)] ${s.count}`}
         >
           {item.count}
         </span>
-        <span className="mono text-[clamp(8px,1.2vh,11px)] tracking-[0.02em] text-[var(--kiosk-ink-soft)]">
+        <span className="mono text-[10px] tracking-[0.02em] text-[var(--kiosk-ink-soft)] sm:text-[clamp(8px,1.2vh,11px)]">
           {item.unit}
         </span>
       </div>

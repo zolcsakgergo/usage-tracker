@@ -30,14 +30,14 @@ export function TransactionScreen({ item, user, sessionTx, onPlus, onMinus, onDo
       : "text-[var(--kiosk-ink)]";
 
   return (
-    <div className="relative z-[1] flex h-screen flex-col" style={{ background: "var(--kiosk-bg)" }}>
+    <div className="relative z-[1] flex min-h-screen flex-col sm:h-screen" style={{ background: "var(--kiosk-bg)" }}>
       <button
         type="button"
         onClick={onDone}
         aria-label={T.done}
-        className="absolute right-[22px] top-[20px] z-10 grid h-12 w-12 place-items-center rounded-[6px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] text-[var(--kiosk-ink-mute)] shadow-[var(--kiosk-shadow-sm)] transition hover:border-[var(--kiosk-line-3)] hover:text-[var(--kiosk-ink)] active:scale-95"
+        className="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-[6px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] text-[var(--kiosk-ink-mute)] shadow-[var(--kiosk-shadow-sm)] transition hover:border-[var(--kiosk-line-3)] hover:text-[var(--kiosk-ink)] active:scale-95 sm:right-[22px] sm:top-[20px] sm:h-12 sm:w-12"
       >
-        <X size={22} strokeWidth={2} />
+        <X size={20} strokeWidth={2} />
       </button>
 
       <div className="mx-auto flex w-full max-w-[820px] flex-1 flex-col items-center justify-center gap-[clamp(12px,2.2vh,22px)] px-[clamp(16px,3vw,56px)] pb-[clamp(16px,3vh,36px)] pt-[clamp(20px,4vh,48px)]">
