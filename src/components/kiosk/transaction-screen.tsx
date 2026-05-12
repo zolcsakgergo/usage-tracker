@@ -2,6 +2,7 @@
 
 import { ArrowLeft, X } from "lucide-react";
 import { T, slotFor, stockTier } from "@/lib/i18n";
+import { imageForSlot } from "@/lib/slot-images";
 import { type ItemDTO, type UserDTO } from "@/app/actions";
 
 export type SessionTx = {
@@ -61,17 +62,30 @@ export function TransactionScreen({
 
         <div className="flex w-full flex-col gap-[clamp(14px,2.4vh,26px)] rounded-[10px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] px-[clamp(16px,2.4vw,32px)] pb-[clamp(14px,2.4vh,26px)] pt-[clamp(14px,2.4vh,28px)] shadow-[var(--kiosk-shadow)]">
           <div className="flex items-end justify-between gap-4 border-b border-[var(--kiosk-line)] pb-[clamp(10px,1.6vh,20px)]">
-            <div className="min-w-0">
-              <div className="truncate text-[clamp(18px,2.8vh,28px)] font-medium tracking-[-0.018em] text-[var(--kiosk-ink)]">
-                {item.name}
-              </div>
-              {item.code && (
-                <div className="mono mt-0.5 text-[clamp(10px,1.4vh,12px)] uppercase tracking-[0.08em] text-[var(--kiosk-ink-dim)]">
-                  {item.code}
+            <div className="flex min-w-0 items-end gap-4">
+              {(() => {
+                const img = imageForSlot(item.slot);
+                return img ? (
+                  <img
+                    src={img}
+                    alt=""
+                    aria-hidden
+                    className="h-[clamp(64px,11vh,112px)] w-[clamp(64px,11vh,112px)] shrink-0 rounded-[8px] border border-[var(--kiosk-line)] bg-white object-cover"
+                  />
+                ) : null;
+              })()}
+              <div className="min-w-0">
+                <div className="truncate text-[clamp(18px,2.8vh,28px)] font-medium tracking-[-0.018em] text-[var(--kiosk-ink)]">
+                  {item.name}
                 </div>
-              )}
-              <div className="mono mt-1.5 text-[clamp(10px,1.4vh,12px)] uppercase tracking-[0.1em] text-[var(--kiosk-ink-soft)]">
-                {user.role}
+                {item.code && (
+                  <div className="mono mt-0.5 text-[clamp(10px,1.4vh,12px)] uppercase tracking-[0.08em] text-[var(--kiosk-ink-dim)]">
+                    {item.code}
+                  </div>
+                )}
+                <div className="mono mt-1.5 text-[clamp(10px,1.4vh,12px)] uppercase tracking-[0.1em] text-[var(--kiosk-ink-soft)]">
+                  {user.role}
+                </div>
               </div>
             </div>
             <div className="text-right">
@@ -114,36 +128,62 @@ export function TransactionScreen({
             </button>
           </div>
 
-          {sessionTx.length > 0 && (
-            <div className="rounded-[6px] border border-dashed border-[var(--kiosk-line-2)] bg-[var(--kiosk-surface-2)] px-[18px] py-3.5">
-              <div className="flex items-center justify-between border-b border-dashed border-[var(--kiosk-line-2)] pb-2">
-                <span className="mono text-[10.5px] uppercase tracking-[0.14em] text-[var(--kiosk-ink-soft)]">
-                  {T.sessionTx}
-                </span>
-                <span className="mono text-[12px] text-[var(--kiosk-ink)]">{sessionTx.length}</span>
-              </div>
-              <div className="mt-1.5 flex flex-col">
-                {sessionTx.slice(-6).reverse().map((tx) => (
-                  <div key={tx.id} className="flex justify-between py-1.5 text-[13px]">
-                    <span
-                      className={`mono font-medium ${
-                        tx.type === "take" ? "text-[var(--kiosk-red)]" : "text-[var(--kiosk-green)]"
-                      }`}
+          {(() => {
+            const slots: (SessionTx | null)[] = Array.from(
+              { length: 6 },
+              (_, i) => sessionTx[sessionTx.length - 1 - i] ?? null
+            );
+            const empty = sessionTx.length === 0;
+            return (
+              <div className="rounded-[6px] border border-dashed border-[var(--kiosk-line-2)] bg-[var(--kiosk-surface-2)] px-[18px] py-3.5">
+                <div className="flex items-center justify-between border-b border-dashed border-[var(--kiosk-line-2)] pb-2">
+                  <span className="mono text-[10.5px] uppercase tracking-[0.14em] text-[var(--kiosk-ink-soft)]">
+                    {T.sessionTx}
+                  </span>
+                  <span className="mono text-[12px] text-[var(--kiosk-ink)]">
+                    {sessionTx.length}
+                  </span>
+                </div>
+                <div className="mt-1.5 flex flex-col">
+                  {slots.map((tx, i) => (
+                    <div
+                      key={tx ? tx.id : `slot-${i}`}
+                      className="flex h-[30px] items-center justify-between text-[13px]"
+                      aria-hidden={!tx}
                     >
-                      {tx.type === "take" ? "−1" : "+1"}
-                    </span>
-                    <span className="mono text-[12px] text-[var(--kiosk-ink-soft)]">
-                      {new Date(tx.ts).toLocaleTimeString("ro-RO", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                      })}
-                    </span>
-                  </div>
-                ))}
+                      {tx ? (
+                        <>
+                          <span
+                            className={`mono font-medium ${
+                              tx.type === "take"
+                                ? "text-[var(--kiosk-red)]"
+                                : "text-[var(--kiosk-green)]"
+                            }`}
+                          >
+                            {tx.type === "take" ? "−1" : "+1"}
+                          </span>
+                          <span className="mono text-[12px] text-[var(--kiosk-ink-soft)]">
+                            {new Date(tx.ts).toLocaleTimeString("ro-RO", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              second: "2-digit",
+                            })}
+                          </span>
+                        </>
+                      ) : (
+                        i === 0 &&
+                        empty && (
+                          <span className="mono text-[12px] italic text-[var(--kiosk-ink-dim)]">
+                            Apasă −1 sau +1 pentru a începe
+                          </span>
+                        )
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
 
         <div className="flex w-full gap-3">

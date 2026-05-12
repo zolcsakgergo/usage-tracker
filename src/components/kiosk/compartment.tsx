@@ -2,6 +2,7 @@
 
 import { type ItemDTO } from "@/app/actions";
 import { slotFor, stockTier, type Tier } from "@/lib/i18n";
+import { imageForSlot } from "@/lib/slot-images";
 
 const tierStyles: Record<Tier, { card: string; count: string; dot: string }> = {
   ok: {
@@ -31,6 +32,7 @@ export function Compartment({
   const tier = stockTier(item.count, item.low);
   const s = tierStyles[tier];
   const slot = slotFor(item.slot);
+  const image = imageForSlot(item.slot);
 
   return (
     <button
@@ -55,6 +57,14 @@ export function Compartment({
         }}
       />
       <div className="relative z-[1] mr-2.5 flex min-h-0 flex-1 items-start gap-1 sm:mr-[clamp(8px,1.2vw,14px)] sm:gap-1.5">
+        {image && (
+          <img
+            src={image}
+            alt=""
+            aria-hidden
+            className="h-6 w-6 shrink-0 rounded-[3px] border border-[var(--kiosk-line)] bg-white object-cover sm:h-[clamp(18px,2.6vh,26px)] sm:w-[clamp(18px,2.6vh,26px)]"
+          />
+        )}
         <span className="mono mt-[1px] shrink-0 rounded-[3px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface-2)] px-1 py-[1px] text-[9px] leading-tight tracking-[0.05em] text-[var(--kiosk-ink-soft)] sm:text-[clamp(7.5px,0.95vh,9.5px)]">
           {slot}
         </span>

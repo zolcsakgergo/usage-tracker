@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { T, slotFor } from "@/lib/i18n";
+import { imageForSlot } from "@/lib/slot-images";
 import { type ItemDTO } from "@/app/actions";
 
 type Props = {
@@ -72,25 +73,38 @@ export function Keypad({ title, subtitle, item, errorTick, onSubmit, onCancel }:
       <div className="mx-auto flex w-full max-w-[1100px] flex-1 flex-col items-stretch gap-4 px-4 py-4 sm:grid sm:grid-cols-[1fr_minmax(280px,42%)] sm:items-center sm:gap-[clamp(16px,3vw,48px)] sm:px-[clamp(16px,3vw,64px)] sm:py-[clamp(16px,3vh,56px)]">
         <div className="flex min-w-0 flex-col gap-[clamp(12px,2vh,24px)]">
           {item ? (
-            <div className="rounded-[10px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] px-[clamp(14px,2vw,24px)] py-[clamp(12px,2vh,22px)] shadow-[var(--kiosk-shadow-sm)]">
-              <div className="mono text-[clamp(9px,1.2vh,10.5px)] uppercase tracking-[0.14em] text-[var(--kiosk-ink-soft)]">
-                {T.compartment} · {slotFor(item.slot)}
-              </div>
-              <div className="mt-2 text-[clamp(18px,2.8vh,28px)] font-medium tracking-[-0.018em] text-[var(--kiosk-ink)]">
-                {item.name}
-              </div>
-              {item.code && (
-                <div className="mono mt-0.5 text-[clamp(10px,1.3vh,11.5px)] uppercase tracking-[0.08em] text-[var(--kiosk-ink-dim)]">
-                  {item.code}
+            <div className="flex gap-4 rounded-[10px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] px-[clamp(14px,2vw,24px)] py-[clamp(12px,2vh,22px)] shadow-[var(--kiosk-shadow-sm)]">
+              {(() => {
+                const img = imageForSlot(item.slot);
+                return img ? (
+                  <img
+                    src={img}
+                    alt=""
+                    aria-hidden
+                    className="h-[clamp(56px,9vh,96px)] w-[clamp(56px,9vh,96px)] shrink-0 rounded-[6px] border border-[var(--kiosk-line)] bg-white object-cover"
+                  />
+                ) : null;
+              })()}
+              <div className="min-w-0 flex-1">
+                <div className="mono text-[clamp(9px,1.2vh,10.5px)] uppercase tracking-[0.14em] text-[var(--kiosk-ink-soft)]">
+                  {T.compartment} · {slotFor(item.slot)}
                 </div>
-              )}
-              <div className="mt-1.5 flex items-baseline gap-2">
-                <span className="mono text-[clamp(15px,2.2vh,22px)] tracking-[-0.02em] text-[var(--kiosk-ink)]">
-                  {item.count}
-                </span>
-                <span className="text-[clamp(11px,1.4vh,13px)] text-[var(--kiosk-ink-soft)]">
-                  {item.unit} {T.onHand}
-                </span>
+                <div className="mt-2 text-[clamp(18px,2.8vh,28px)] font-medium tracking-[-0.018em] text-[var(--kiosk-ink)]">
+                  {item.name}
+                </div>
+                {item.code && (
+                  <div className="mono mt-0.5 text-[clamp(10px,1.3vh,11.5px)] uppercase tracking-[0.08em] text-[var(--kiosk-ink-dim)]">
+                    {item.code}
+                  </div>
+                )}
+                <div className="mt-1.5 flex items-baseline gap-2">
+                  <span className="mono text-[clamp(15px,2.2vh,22px)] tracking-[-0.02em] text-[var(--kiosk-ink)]">
+                    {item.count}
+                  </span>
+                  <span className="text-[clamp(11px,1.4vh,13px)] text-[var(--kiosk-ink-soft)]">
+                    {item.unit} {T.onHand}
+                  </span>
+                </div>
               </div>
             </div>
           ) : (
