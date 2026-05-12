@@ -4,21 +4,27 @@ import { type ItemDTO } from "@/app/actions";
 import { slotFor, stockTier, type Tier } from "@/lib/i18n";
 import { imageForSlot } from "@/lib/slot-images";
 
-const tierStyles: Record<Tier, { card: string; count: string; dot: string }> = {
+const tierStyles: Record<
+  Tier,
+  { card: string; count: string; dot: string; slot: string }
+> = {
   ok: {
-    card: "bg-[var(--kiosk-surface)] border-[var(--kiosk-line)]",
-    count: "text-[var(--kiosk-ink)]",
+    card: "bg-[var(--kiosk-green-soft)] border-[#9bc0a9]",
+    count: "text-[var(--kiosk-green)]",
     dot: "bg-[var(--kiosk-green)]",
+    slot: "border-[#9bc0a9] bg-white/70 text-[var(--kiosk-green)]",
   },
   low: {
-    card: "border-[#d9c490] bg-gradient-to-b from-[#fdf6e3] from-0% via-white via-[24%] to-white",
+    card: "bg-[var(--kiosk-amber-soft)] border-[#d9c490]",
     count: "text-[var(--kiosk-amber)]",
     dot: "bg-[var(--kiosk-amber)]",
+    slot: "border-[#d9c490] bg-white/70 text-[var(--kiosk-amber)]",
   },
   empty: {
-    card: "border-[#d9b1a4] bg-gradient-to-b from-[#fae9e3] from-0% via-white via-[24%] to-white",
+    card: "bg-[var(--kiosk-red-soft)] border-[#d9b1a4]",
     count: "text-[var(--kiosk-red)]",
     dot: "bg-[var(--kiosk-red)]",
+    slot: "border-[#d9b1a4] bg-white/70 text-[var(--kiosk-red)]",
   },
 };
 
@@ -50,7 +56,7 @@ export function Compartment({
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute right-0 top-0 h-full w-2.5 border-l border-[rgba(26,26,23,0.04)] sm:w-[clamp(10px,1.5vw,22px)]"
+        className="pointer-events-none absolute right-0 top-0 h-full w-2.5 border-l border-black/5 sm:w-[clamp(10px,1.5vw,22px)]"
         style={{
           backgroundImage:
             "repeating-linear-gradient(135deg, rgba(26,26,23,0.025) 0 2px, transparent 2px 8px)",
@@ -65,7 +71,9 @@ export function Compartment({
             className="h-6 w-6 shrink-0 rounded-[3px] border border-[var(--kiosk-line)] bg-white object-cover sm:h-[clamp(18px,2.6vh,26px)] sm:w-[clamp(18px,2.6vh,26px)]"
           />
         )}
-        <span className="mono mt-[1px] shrink-0 rounded-[3px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface-2)] px-1 py-[1px] text-[9px] leading-tight tracking-[0.05em] text-[var(--kiosk-ink-soft)] sm:text-[clamp(7.5px,0.95vh,9.5px)]">
+        <span
+          className={`mono mt-[1px] shrink-0 rounded-[3px] border px-1 py-[1px] text-[9px] font-medium leading-tight tracking-[0.05em] sm:text-[clamp(7.5px,0.95vh,9.5px)] ${s.slot}`}
+        >
           {slot}
         </span>
         <span className="flex min-w-0 flex-1 flex-col gap-[1px] overflow-hidden">
