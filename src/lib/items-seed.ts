@@ -1,5 +1,4 @@
-// Authoritative 48-compartment layout from "cutie stoc legris.xlsx" sheet 2.
-// 6 columns × 8 drawers — Legris pneumatic fittings.
+// 72-compartment layout (6 columns × 12 drawers) — Racorduri pneumatice Legris.
 
 export type SeedItem = {
   id: string;
@@ -10,63 +9,93 @@ export type SeedItem = {
   low: number;
 };
 
+const base = { code: null, unit: "buc", start: 0, low: 3 } as const;
+
 export const DEFAULT_ITEMS: SeedItem[] = [
   // Row A
-  { id: "pcci-04-m5", name: "4 Drept M5", code: "PCCI 04-M5", unit: "buc", start: 0, low: 3 },
-  { id: "pcci-06-18", name: "6 Drept 1/8", code: "PCCI 06-18", unit: "buc", start: 0, low: 3 },
-  { id: "pcci-08-18", name: "8 Drept 1/8", code: "PCCI 08-18", unit: "buc", start: 0, low: 3 },
-  { id: "pcci-10-18", name: "10 Drept 1/8", code: "PCCI 10-18", unit: "buc", start: 0, low: 3 },
-  { id: "pcci-12-14", name: "12 Drept 1/4", code: "PCCI 12-14", unit: "buc", start: 0, low: 3 },
-  { id: "pul-04", name: "4 L", code: "PUL 04", unit: "buc", start: 0, low: 3 },
+  { ...base, id: "drept-04-18", name: "4 Drept 1/8" },
+  { ...base, id: "drept-06-18", name: "6 Drept 1/8" },
+  { ...base, id: "drept-08-18", name: "8 Drept 1/8" },
+  { ...base, id: "drept-10-18", name: "10 Drept 1/8" },
+  { ...base, id: "drept-12-18", name: "12 Drept 1/8" },
+  { ...base, id: "reductie-d6-d4", name: "REDUCTIE D6-D4" },
   // Row B
-  { id: "pcci-04-18", name: "4 Drept 1/8", code: "PCCI 04-18", unit: "buc", start: 0, low: 3 },
-  { id: "pcci-06-14", name: "6 Drept 1/4", code: "PCCI 06-14", unit: "buc", start: 0, low: 3 },
-  { id: "pcci-08-14", name: "8 Drept 1/4", code: "PCCI 08-14", unit: "buc", start: 0, low: 3 },
-  { id: "pcci-10-14", name: "10 Drept 1/4", code: "PCCI 10-14", unit: "buc", start: 0, low: 3 },
-  { id: "puc-12", name: "12 Legătură", code: "PUC 12", unit: "buc", start: 0, low: 3 },
-  { id: "py-04", name: "4 Y", code: "PY 04", unit: "buc", start: 0, low: 3 },
+  { ...base, id: "drept-04-14", name: "4 Drept 1/4" },
+  { ...base, id: "drept-06-14", name: "6 Drept 1/4" },
+  { ...base, id: "drept-08-14", name: "8 Drept 1/4" },
+  { ...base, id: "drept-10-14", name: "10 Drept 1/4" },
+  { ...base, id: "drept-12-14", name: "12 Drept 1/4" },
+  { ...base, id: "reductie-d8-d6", name: "REDUCTIE D8-D6" },
   // Row C
-  { id: "pcci-04-14", name: "4 Drept 1/4", code: "PCCI 04-14", unit: "buc", start: 0, low: 3 },
-  { id: "pcci-06-38", name: "6 Drept 3/8", code: "PCCI 06-38", unit: "buc", start: 0, low: 3 },
-  { id: "pcci-08-38", name: "8 Drept 3/8", code: "PCCI 08-38", unit: "buc", start: 0, low: 3 },
-  { id: "pcci-10-38", name: "10 Drept 3/8", code: "PCCI 10-38", unit: "buc", start: 0, low: 3 },
-  { id: "ptci-12-14", name: "12 T 1/4", code: "PTCI 12-14", unit: "buc", start: 0, low: 3 },
-  { id: "pul-06", name: "6 L", code: "PUL 06", unit: "buc", start: 0, low: 3 },
+  { ...base, id: "cot-04-18", name: "4 COT 1/8" },
+  { ...base, id: "drept-06-38", name: "6 Drept 3/8" },
+  { ...base, id: "drept-08-38", name: "8 Drept 3/8" },
+  { ...base, id: "drept-10-38", name: "10 Drept 3/8" },
+  { ...base, id: "drept-12-38", name: "12 Drept 3/8" },
+  { ...base, id: "reductie-d10-d8", name: "REDUCTIE D10-D8" },
   // Row D
-  { id: "puc-04", name: "4 Legătură", code: "PUC 04", unit: "buc", start: 0, low: 3 },
-  { id: "puc-06", name: "6 Legătură", code: "PUC 06", unit: "buc", start: 0, low: 3 },
-  { id: "puc-08", name: "8 Legătură", code: "PUC 08", unit: "buc", start: 0, low: 3 },
-  { id: "pcci-10-12", name: "10 Drept 1/2", code: "PCCI 10-12", unit: "buc", start: 0, low: 3 },
-  { id: "ptci-12-38", name: "12 T 3/8", code: "PTCI 12-38", unit: "buc", start: 0, low: 3 },
-  { id: "py-06", name: "6 Y", code: "PY 06", unit: "buc", start: 0, low: 3 },
+  { ...base, id: "cot-04-38", name: "4 COT 3/8" },
+  { ...base, id: "cot-06-38", name: "6 COT 3/8" },
+  { ...base, id: "cot-08-38", name: "8 COT 3/8" },
+  { ...base, id: "cot-10-38", name: "10 COT 3/8" },
+  { ...base, id: "cot-12-38", name: "12 COT 3/8" },
+  { ...base, id: "reductie-d12-d10", name: "REDUCTIE D12-D10" },
   // Row E
-  { id: "ptci-04-m5", name: "4 T M5", code: "PTCI 04-M5", unit: "buc", start: 0, low: 3 },
-  { id: "ptci-06-18", name: "6 T 1/8", code: "PTCI 06-18", unit: "buc", start: 0, low: 3 },
-  { id: "ptci-08-18", name: "8 T 1/8", code: "PTCI 08-18", unit: "buc", start: 0, low: 3 },
-  { id: "puc-10", name: "10 Legătură", code: "PUC 10", unit: "buc", start: 0, low: 3 },
-  { id: "put-12", name: "12 T simplu", code: "PUT 12", unit: "buc", start: 0, low: 3 },
-  { id: "pul-08", name: "8 L", code: "PUL 08", unit: "buc", start: 0, low: 3 },
+  { ...base, id: "cot-04-14", name: "4 COT 1/4" },
+  { ...base, id: "cot-06-14", name: "6 COT 1/4" },
+  { ...base, id: "cot-08-14", name: "8 COT 1/4" },
+  { ...base, id: "cot-10-14", name: "10 COT 1/4" },
+  { ...base, id: "cot-12-14", name: "12 COT 1/4" },
+  { ...base, id: "dop-d4", name: "DOP D4" },
   // Row F
-  { id: "ptci-04-18", name: "4 T 1/8", code: "PTCI 04-18", unit: "buc", start: 0, low: 3 },
-  { id: "ptci-06-14", name: "6 T 1/4", code: "PTCI 06-14", unit: "buc", start: 0, low: 3 },
-  { id: "ptci-08-14", name: "8 T 1/4", code: "PTCI 08-14", unit: "buc", start: 0, low: 3 },
-  { id: "ptci-10-38", name: "10 T 3/8", code: "PTCI 10-38", unit: "buc", start: 0, low: 3 },
-  { id: "plci-12-14", name: "12 Cot 1/4", code: "PLCI 12-14", unit: "buc", start: 0, low: 3 },
-  { id: "py-08", name: "8 Y", code: "PY 08", unit: "buc", start: 0, low: 3 },
+  { ...base, id: "cot-04-egal", name: "4 COT 4 EGAL" },
+  { ...base, id: "cot-06-egal", name: "6 COT 4 EGAL" },
+  { ...base, id: "cot-08-egal", name: "8 COT 4 EGAL" },
+  { ...base, id: "cot-10-egal", name: "10 COT 4 EGAL" },
+  { ...base, id: "cot-12-egal", name: "12 COT 4 EGAL" },
+  { ...base, id: "dop-d6", name: "DOP D6" },
   // Row G
-  { id: "plci-04-m5", name: "4 Cot M5", code: "PLCI 04-M5", unit: "buc", start: 0, low: 3 },
-  { id: "ptci-06-38", name: "6 T 3/8", code: "PTCI 06-38", unit: "buc", start: 0, low: 3 },
-  { id: "put-08", name: "8 T simplu", code: "PUT 08", unit: "buc", start: 0, low: 3 },
-  { id: "put-10", name: "10 T simplu", code: "PUT 10", unit: "buc", start: 0, low: 3 },
-  { id: "plci-12-38", name: "12 Cot 3/8", code: "PLCI 12-38", unit: "buc", start: 0, low: 3 },
-  { id: "pul-10", name: "10 L", code: "PUL 10", unit: "buc", start: 0, low: 3 },
+  { ...base, id: "y-04", name: "4 distribuitor Y" },
+  { ...base, id: "y-06", name: "6 distribuitor Y" },
+  { ...base, id: "y-08", name: "8 distribuitor Y" },
+  { ...base, id: "y-10", name: "10 distribuitor Y" },
+  { ...base, id: "y-12", name: "12 distribuitor Y" },
+  { ...base, id: "dop-d8", name: "DOP D8" },
   // Row H
-  { id: "put-04", name: "4 T simplu", code: "PUT 04", unit: "buc", start: 0, low: 3 },
-  { id: "plci-06-18", name: "6 Cot 1/8", code: "PLCI 06-18", unit: "buc", start: 0, low: 3 },
-  { id: "plci-08-18", name: "8 Cot 1/8", code: "PLCI 08-18", unit: "buc", start: 0, low: 3 },
-  { id: "plci-10-14", name: "10 Cot 1/4", code: "PLCI 10-14", unit: "buc", start: 0, low: 3 },
-  { id: "reserve-h5", name: "Liber · rezervă", code: null, unit: "buc", start: 0, low: 0 },
-  { id: "py-10", name: "10 Y", code: "PY 10", unit: "buc", start: 0, low: 3 },
+  { ...base, id: "teu-04-18", name: "4 Teu 1/8" },
+  { ...base, id: "teu-06-18", name: "6 Teu 1/8" },
+  { ...base, id: "teu-08-18", name: "8 Teu 1/8" },
+  { ...base, id: "teu-10-18", name: "10 Teu 1/8" },
+  { ...base, id: "teu-12-18", name: "12 Teu 1/8" },
+  { ...base, id: "dop-d10", name: "DOP D10" },
+  // Row I
+  { ...base, id: "teu-05-14", name: "5 Teu 1/4" },
+  { ...base, id: "teu-06-14", name: "6 Teu 1/4" },
+  { ...base, id: "teu-08-14", name: "8 Teu 1/4" },
+  { ...base, id: "teu-10-14", name: "10 Teu 1/4" },
+  { ...base, id: "teu-12-14", name: "12 Teu 1/4" },
+  { ...base, id: "dop-d12", name: "DOP D12" },
+  // Row J — note: col 1 and col 2 both labelled "6 Teu 3/8" per source list
+  { ...base, id: "teu-06-38-j1", name: "6 Teu 3/8" },
+  { ...base, id: "teu-06-38", name: "6 Teu 3/8" },
+  { ...base, id: "teu-08-38", name: "8 Teu 3/8" },
+  { ...base, id: "teu-10-38", name: "10 Teu 3/8" },
+  { ...base, id: "teu-12-38", name: "12 Teu 3/8" },
+  { ...base, id: "amortizor-18", name: "AMORTIZOR 1/8" },
+  // Row K
+  { ...base, id: "teu-simplu-04", name: "4 Teu simplu" },
+  { ...base, id: "teu-simplu-06", name: "6 Teu simplu" },
+  { ...base, id: "teu-simplu-08", name: "8 Teu simplu" },
+  { ...base, id: "teu-simplu-10", name: "10 Teu simplu" },
+  { ...base, id: "teu-simplu-12", name: "12 Teu simplu" },
+  { ...base, id: "amortizor-14", name: "AMORTIZOR 1/4" },
+  // Row L
+  { ...base, id: "legatura-04", name: "4 Legatura" },
+  { ...base, id: "legatura-06", name: "6 Legatura" },
+  { ...base, id: "legatura-08", name: "8 Legatura" },
+  { ...base, id: "legatura-10", name: "10 Legatura" },
+  { ...base, id: "legatura-12", name: "12 Legatura" },
+  { ...base, id: "amortizor-38", name: "AMORTIZOR 3/8" },
 ];
 
 export const DEFAULT_USERS = [

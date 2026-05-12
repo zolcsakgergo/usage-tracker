@@ -79,7 +79,7 @@ export function GridScreen({
 
   return (
     <div className="relative z-[1] flex min-h-screen flex-col sm:h-screen">
-      <header className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] px-3 py-2 sm:static sm:gap-3 md:px-6 md:py-3">
+      <header className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] px-3 py-2 sm:static sm:gap-3 sm:py-1.5 md:px-6 md:py-2">
         <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
           <div className="relative grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[var(--kiosk-ink)] sm:h-9 sm:w-9">
             <span className="absolute inset-1 rounded-[5px] border border-[rgba(244,243,238,0.18)]" />
@@ -134,10 +134,10 @@ export function GridScreen({
         </div>
       )}
 
-      <div className="flex shrink-0 gap-2 px-3 pt-2 sm:px-6 sm:pt-3">
+      <div className="flex shrink-0 gap-2 px-3 pt-1.5 sm:px-6 sm:pt-2">
         <div className="relative flex-1">
           <Search
-            size={14}
+            size={13}
             className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--kiosk-ink-soft)]"
           />
           <input
@@ -145,7 +145,7 @@ export function GridScreen({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Caută după nume, cod sau slot (ex. 10, M5, A1)"
-            className="mono w-full rounded-[6px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] py-1.5 pl-8 pr-8 text-[12.5px] text-[var(--kiosk-ink)] placeholder:text-[var(--kiosk-ink-dim)] focus:border-[var(--kiosk-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--kiosk-accent-soft)]"
+            className="mono w-full rounded-[6px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] py-1 pl-8 pr-8 text-[12px] text-[var(--kiosk-ink)] placeholder:text-[var(--kiosk-ink-dim)] focus:border-[var(--kiosk-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--kiosk-accent-soft)]"
           />
           {search && (
             <button
@@ -160,14 +160,16 @@ export function GridScreen({
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 gap-1.5 px-2 pb-2 pt-2 sm:gap-2.5 sm:px-2 sm:pb-1.5 md:px-6 md:pt-3">
+      <div className="flex min-h-0 flex-1 gap-1.5 px-2 pb-2 pt-2 sm:gap-1.5 sm:px-2 sm:pb-1 sm:pt-1.5 md:px-5">
         {/* Row letters: hidden on phones */}
         <div className="mono hidden w-3.5 flex-col pt-[20px] text-[clamp(8px,1vh,11px)] text-[var(--kiosk-ink-dim)] sm:flex md:w-5">
-          {["A", "B", "C", "D", "E", "F", "G", "H"].map((l) => (
-            <div key={l} className="grid flex-1 place-items-center">
-              {l}
-            </div>
-          ))}
+          {["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"].map(
+            (l) => (
+              <div key={l} className="grid flex-1 place-items-center">
+                {l}
+              </div>
+            )
+          )}
         </div>
         <div className="flex min-h-0 flex-1 flex-col">
           {/* Column numbers: hidden on phones */}
@@ -184,7 +186,7 @@ export function GridScreen({
               Niciun articol nu corespunde căutării „{search}".
             </div>
           ) : (
-            <div className="grid min-h-0 flex-1 grid-cols-3 gap-2 [grid-auto-rows:minmax(86px,1fr)] sm:grid-cols-6 sm:grid-rows-8 sm:gap-1.5 sm:[grid-auto-rows:auto] md:gap-2.5">
+            <div className="grid min-h-0 flex-1 grid-cols-3 gap-2 [grid-auto-rows:minmax(80px,1fr)] sm:grid-cols-6 sm:grid-rows-12 sm:gap-1 sm:[grid-auto-rows:auto] md:gap-1.5">
               {filtered.map((it) => (
                 <Compartment key={it.id} item={it} onClick={onPick} />
               ))}
