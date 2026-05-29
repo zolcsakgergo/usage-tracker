@@ -51,7 +51,7 @@ export function GridScreen({
   sessionRemaining?: number | null;
   onEndSession?: () => void;
 }) {
-  const total = items.reduce((s, i) => s + i.count, 0);
+  const okCount = items.filter((i) => stockTier(i.count, i.low) === "ok").length;
   const lowCount = items.filter((i) => stockTier(i.count, i.low) === "low").length;
   const empty = items.filter((i) => stockTier(i.count, i.low) === "empty").length;
 
@@ -95,7 +95,7 @@ export function GridScreen({
           </div>
         </div>
         <div className="flex items-center gap-1 sm:gap-2">
-          <Stat label={T.inStock} value={total} />
+          <Stat label={T.inStock} value={okCount} />
           <Stat label={T.low} value={lowCount} tone={lowCount ? "warn" : null} />
           <Stat label={T.empty} value={empty} tone={empty ? "bad" : null} />
           <button
@@ -129,7 +129,7 @@ export function GridScreen({
             className="inline-flex shrink-0 items-center gap-1.5 rounded-[6px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] px-2.5 py-1 text-[11.5px] font-medium text-[var(--kiosk-ink-mute)] transition hover:border-[var(--kiosk-line-3)] hover:text-[var(--kiosk-ink)] active:translate-y-px"
           >
             <LogOut size={13} />
-            Ieși
+            Finalizează sesiunea
           </button>
         </div>
       )}

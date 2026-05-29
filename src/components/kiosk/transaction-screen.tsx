@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, X } from "lucide-react";
+import { X } from "lucide-react";
 import { T, slotFor, stockTier } from "@/lib/i18n";
 import { imageForSlot } from "@/lib/slot-images";
 import { type ItemDTO, type UserDTO } from "@/app/actions";
@@ -18,7 +18,6 @@ type Props = {
   onPlus: () => void;
   onMinus: () => void;
   onDone: () => void;
-  onBack?: () => void;
 };
 
 export function TransactionScreen({
@@ -28,7 +27,6 @@ export function TransactionScreen({
   onPlus,
   onMinus,
   onDone,
-  onBack,
 }: Props) {
   const tier = stockTier(item.count, item.low);
   const cannotTake = item.count <= 0;
@@ -187,16 +185,6 @@ export function TransactionScreen({
         </div>
 
         <div className="flex w-full gap-3">
-          {onBack && (
-            <button
-              type="button"
-              onClick={onBack}
-              className="flex h-[clamp(48px,7vh,68px)] flex-1 items-center justify-center gap-2 rounded-[10px] border border-[var(--kiosk-line)] bg-[var(--kiosk-surface)] text-[clamp(13px,1.9vh,16px)] font-medium tracking-[0.005em] text-[var(--kiosk-ink)] transition hover:border-[var(--kiosk-line-3)] hover:bg-[var(--kiosk-surface-2)] active:translate-y-px"
-            >
-              <ArrowLeft size={16} />
-              Alt articol
-            </button>
-          )}
           <button
             type="button"
             onClick={onDone}

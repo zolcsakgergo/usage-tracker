@@ -19,7 +19,7 @@ export const T = {
   putBack: "Pune înapoi",
   taken: "scos",
   returned: "returnat",
-  done: "Gata",
+  done: "Confirmă",
   enter: "Intră",
   sessionTx: "Tranzacții în sesiune",
 };

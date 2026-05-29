@@ -260,8 +260,7 @@ export function KioskApp({ initialItems }: { initialItems: ItemDTO[] }) {
       sessionTx={session.tape}
       onMinus={() => applyDelta("take")}
       onPlus={() => applyDelta("return")}
-      onBack={backToGridKeepSession}
-      onDone={() => void endActiveSession()}
+      onDone={backToGridKeepSession}
     />
   );
 }
