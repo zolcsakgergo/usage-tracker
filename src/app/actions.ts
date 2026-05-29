@@ -3,6 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { hashPin, pinLookup, verifyPin as verifyPinHash } from "@/lib/pin";
 import { setAdminCookie, clearAdminCookie, getAdminSession } from "@/lib/admin-session";
+import { slotFor } from "@/lib/i18n";
+import { ITEM_CSV_COLUMNS } from "@/lib/items-csv";
 import { revalidatePath } from "next/cache";
 
 export type ItemDTO = {
@@ -106,6 +108,18 @@ export async function recordTransaction(input: {
 async function requireAdmin() {
   const s = await getAdminSession();
   if (!s) throw new Error("unauthorized");
+  // The cookie is only HMAC-signed; it isn't re-checked against the DB. After a
+  // reseed (new cuids) or a deactivation, a still-valid cookie can carry a userId
+  // that no longer maps to an active Administrator. Writing that id into a
+  // Transaction/AuditLog then trips transactions_user_id_fkey, so verify here.
+  const user = await prisma.user.findUnique({
+    where: { id: s.userId },
+    select: { active: true, role: true },
+  });
+  if (!user || !user.active || user.role !== "Administrator") {
+    await clearAdminCookie();
+    throw new Error("unauthorized");
+  }
   return s;
 }
 
@@ -477,6 +491,113 @@ export async function adjustStock(input: { itemId: string; newCount: number }) {
   });
   revalidatePath("/admin");
   revalidatePath("/");
+}
+
+export async function exportItemsCsv(): Promise<string> {
+  await requireAdmin();
+  const items = await prisma.item.findMany({ orderBy: { slotIndex: "asc" } });
+  const lines: string[] = [];
+  lines.push(csvRow(ITEM_CSV_COLUMNS.map((c) => c.header)));
+  for (const it of items) {
+    lines.push(
+      csvRow([
+        it.id,
+        slotFor(it.slotIndex),
+        it.name,
+        it.code ?? "",
+        it.accountingCode ?? "",
+        it.unit,
+        it.count,
+        it.lowThreshold,
+      ])
+    );
+  }
+  // UTF-8 BOM so Excel opens Romanian diacritics correctly.
+  return "﻿" + lines.join("\r\n") + "\r\n";
+}
+
+export type BulkItemUpdate = {
+  slotIndex: number;
+  name: string;
+  code: string | null;
+  accountingCode: string | null;
+  unit: string;
+  count: number;
+  low: number;
+};
+
+export async function bulkUpdateItems(changes: BulkItemUpdate[]): Promise<{
+  changed: number;
+  stockChanged: number;
+  unmatched: number[];
+}> {
+  const admin = await requireAdmin();
+  const items = await prisma.item.findMany();
+  const bySlot = new Map(items.map((it) => [it.slotIndex, it]));
+  const unmatched: number[] = [];
+  let changed = 0;
+  let stockChanged = 0;
+
+  await prisma.$transaction(async (tx) => {
+    for (const ch of changes) {
+      if (ch.count < 0 || ch.low < 0) continue;
+      const item = bySlot.get(ch.slotIndex);
+      if (!item) {
+        unmatched.push(ch.slotIndex);
+        continue;
+      }
+
+      const data: Record<string, unknown> = {};
+      const newName = ch.name.trim();
+      const newCode = ch.code?.trim() || null;
+      const newAcc = ch.accountingCode?.trim() || null;
+      const newUnit = ch.unit.trim();
+      if (newName !== item.name) data.name = newName;
+      if (newCode !== item.code) data.code = newCode;
+      if (newAcc !== item.accountingCode) data.accountingCode = newAcc;
+      if (newUnit !== item.unit) data.unit = newUnit;
+      if (ch.low !== item.lowThreshold) data.lowThreshold = ch.low;
+
+      const metaChanged = Object.keys(data).length > 0;
+      const delta = ch.count - item.count;
+      if (!metaChanged && delta === 0) continue;
+
+      if (delta !== 0) data.count = ch.count;
+      await tx.item.update({ where: { id: item.id }, data });
+
+      if (metaChanged) {
+        await tx.auditLog.create({
+          data: { actor: admin.userId, action: "item.update", target: item.id },
+        });
+      }
+      // Stock changes leave a Transaction + audit trail (same as adjustStock),
+      // so Comenzi + dashboard analytics stay correct.
+      if (delta !== 0) {
+        await tx.transaction.create({
+          data: {
+            itemId: item.id,
+            userId: admin.userId,
+            type: delta < 0 ? "take" : "return_",
+            qty: Math.abs(delta),
+          },
+        });
+        await tx.auditLog.create({
+          data: {
+            actor: admin.userId,
+            action: "item.stock-adjust",
+            target: item.id,
+            metadata: { from: item.count, to: ch.count },
+          },
+        });
+        stockChanged++;
+      }
+      changed++;
+    }
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/");
+  return { changed, stockChanged, unmatched };
 }
 
 export async function exportBackup(): Promise<{
