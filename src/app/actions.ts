@@ -1,5 +1,6 @@
 "use server";
 
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { hashPin, pinLookup, verifyPin as verifyPinHash } from "@/lib/pin";
 import { setAdminCookie, clearAdminCookie, getAdminSession } from "@/lib/admin-session";
@@ -538,62 +539,75 @@ export async function bulkUpdateItems(changes: BulkItemUpdate[]): Promise<{
   let changed = 0;
   let stockChanged = 0;
 
-  await prisma.$transaction(async (tx) => {
-    for (const ch of changes) {
-      if (ch.count < 0 || ch.low < 0) continue;
-      const item = bySlot.get(ch.slotIndex);
-      if (!item) {
-        unmatched.push(ch.slotIndex);
-        continue;
-      }
+  await prisma.$transaction(
+    async (tx) => {
+      // Batch the audit-log + transaction inserts: doing them per-item inside
+      // the transaction meant up to ~3N extra round-trips to the Supabase
+      // pooler, which blew past Prisma's interactive-transaction timeout
+      // (P2028) on large bulk edits. We collect them and flush with two
+      // createMany calls instead.
+      const auditRows: Prisma.AuditLogCreateManyInput[] = [];
+      const txRows: Prisma.TransactionCreateManyInput[] = [];
 
-      const data: Record<string, unknown> = {};
-      const newName = ch.name.trim();
-      const newCode = ch.code?.trim() || null;
-      const newAcc = ch.accountingCode?.trim() || null;
-      const newUnit = ch.unit.trim();
-      if (newName !== item.name) data.name = newName;
-      if (newCode !== item.code) data.code = newCode;
-      if (newAcc !== item.accountingCode) data.accountingCode = newAcc;
-      if (newUnit !== item.unit) data.unit = newUnit;
-      if (ch.low !== item.lowThreshold) data.lowThreshold = ch.low;
+      for (const ch of changes) {
+        if (ch.count < 0 || ch.low < 0) continue;
+        const item = bySlot.get(ch.slotIndex);
+        if (!item) {
+          unmatched.push(ch.slotIndex);
+          continue;
+        }
 
-      const metaChanged = Object.keys(data).length > 0;
-      const delta = ch.count - item.count;
-      if (!metaChanged && delta === 0) continue;
+        const data: Record<string, unknown> = {};
+        const newName = ch.name.trim();
+        const newCode = ch.code?.trim() || null;
+        const newAcc = ch.accountingCode?.trim() || null;
+        const newUnit = ch.unit.trim();
+        if (newName !== item.name) data.name = newName;
+        if (newCode !== item.code) data.code = newCode;
+        if (newAcc !== item.accountingCode) data.accountingCode = newAcc;
+        if (newUnit !== item.unit) data.unit = newUnit;
+        if (ch.low !== item.lowThreshold) data.lowThreshold = ch.low;
 
-      if (delta !== 0) data.count = ch.count;
-      await tx.item.update({ where: { id: item.id }, data });
+        const metaChanged = Object.keys(data).length > 0;
+        const delta = ch.count - item.count;
+        if (!metaChanged && delta === 0) continue;
 
-      if (metaChanged) {
-        await tx.auditLog.create({
-          data: { actor: admin.userId, action: "item.update", target: item.id },
-        });
-      }
-      // Stock changes leave a Transaction + audit trail (same as adjustStock),
-      // so Comenzi + dashboard analytics stay correct.
-      if (delta !== 0) {
-        await tx.transaction.create({
-          data: {
+        if (delta !== 0) data.count = ch.count;
+        await tx.item.update({ where: { id: item.id }, data });
+
+        if (metaChanged) {
+          auditRows.push({
+            actor: admin.userId,
+            action: "item.update",
+            target: item.id,
+          });
+        }
+        // Stock changes leave a Transaction + audit trail (same as adjustStock),
+        // so Comenzi + dashboard analytics stay correct.
+        if (delta !== 0) {
+          txRows.push({
             itemId: item.id,
             userId: admin.userId,
             type: delta < 0 ? "take" : "return_",
             qty: Math.abs(delta),
-          },
-        });
-        await tx.auditLog.create({
-          data: {
+          });
+          auditRows.push({
             actor: admin.userId,
             action: "item.stock-adjust",
             target: item.id,
             metadata: { from: item.count, to: ch.count },
-          },
-        });
-        stockChanged++;
+          });
+          stockChanged++;
+        }
+        changed++;
       }
-      changed++;
-    }
-  });
+
+      if (txRows.length) await tx.transaction.createMany({ data: txRows });
+      if (auditRows.length)
+        await tx.auditLog.createMany({ data: auditRows });
+    },
+    { timeout: 20_000, maxWait: 10_000 }
+  );
 
   revalidatePath("/admin");
   revalidatePath("/");
